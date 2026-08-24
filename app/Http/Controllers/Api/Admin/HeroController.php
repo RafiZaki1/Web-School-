@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Contracts\HeroServiceInterface;
+use App\Contracts\Interfaces\HeroServiceInterface;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Hero\StoreHeroRequest;

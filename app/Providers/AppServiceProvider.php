@@ -2,36 +2,59 @@
 
 namespace App\Providers;
 
-use App\Contracts\FileUploadServiceInterface;
-use App\Contracts\GalleryServiceInterface;
-use App\Contracts\HeroServiceInterface;
-use App\Contracts\HomeServiceInterface;
-use App\Contracts\SchoolProfileServiceInterface;
-use App\Contracts\StatisticServiceInterface;
-use App\Services\FileUploadService;
-use App\Services\GalleryService;
-use App\Services\HeroService;
-use App\Services\HomeService;
-use App\Services\SchoolProfileService;
-use App\Services\StatisticService;
+use App\Contracts\Interfaces\FileUploadServiceInterface;
+use App\Contracts\Interfaces\GalleryServiceInterface;
+use App\Contracts\Interfaces\HeroServiceInterface;
+use App\Contracts\Interfaces\HomeServiceInterface;
+use App\Contracts\Interfaces\HeroRepositoryInterface;
+use App\Contracts\Interfaces\SchoolProfileServiceInterface;
+use App\Contracts\Interfaces\GalleryRepositoryInterface;
+use App\Contracts\Interfaces\RoomRepositoryInterface;
+use App\Contracts\Interfaces\RoomServiceInterface;
+use App\Contracts\Interfaces\SchoolProfileRepositoryInterface;
+use App\Contracts\Interfaces\StatisticServiceInterface;
+use App\Contracts\Interfaces\StatisticRepositoryInterface;
+use App\Contracts\Repositories\GalleryRepository;
+use App\Contracts\Repositories\HeroRepository;
+use App\Contracts\Repositories\RoomRepository;
+use App\Contracts\Repositories\SchoolProfileRepository;
+use App\Contracts\Repositories\StatisticRepository;
+use App\Services\landingpageservices\FileUploadService;
+use App\Services\landingpageservices\GalleryService;
+use App\Services\landingpageservices\HeroService;
+use App\Services\landingpageservices\HomeService;
+use App\Services\landingpageservices\RoomService;
+use App\Services\landingpageservices\SchoolProfileService;
+use App\Services\landingpageservices\StatisticService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private array $register = [
+        HeroRepositoryInterface::class => HeroRepository::class,
+        GalleryRepositoryInterface::class => GalleryRepository::class,
+        RoomRepositoryInterface::class => RoomRepository::class,
+        SchoolProfileRepositoryInterface::class => SchoolProfileRepository::class,
+        StatisticRepositoryInterface::class => StatisticRepository::class,
+
+        HeroServiceInterface::class => HeroService::class,
+        GalleryServiceInterface::class => GalleryService::class,
+        HomeServiceInterface::class => HomeService::class,
+        RoomServiceInterface::class => RoomService::class,
+        SchoolProfileServiceInterface::class => SchoolProfileService::class,
+        StatisticServiceInterface::class => StatisticService::class,
+
+        FileUploadServiceInterface::class => FileUploadService::class,
+    ];
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->app->bind(FileUploadServiceInterface::class, FileUploadService::class);
-        $this->app->bind(HeroServiceInterface::class, HeroService::class);
-        $this->app->bind(GalleryServiceInterface::class, GalleryService::class);
-        $this->app->bind(SchoolProfileServiceInterface::class, SchoolProfileService::class);
-        $this->app->bind(StatisticServiceInterface::class, StatisticService::class);
-        $this->app->bind(HomeServiceInterface::class, HomeService::class);
-        $this->app->bind(\App\Contracts\RoomServiceInterface::class, \App\Services\RoomService::class);
+        foreach ($this->register as $index => $value) {
+            $this->app->bind($index, $value);
+        }
     }
-
     /**
      * Bootstrap any application services.
      */

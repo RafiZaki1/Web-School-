@@ -6,6 +6,7 @@ use App\Models\SchoolProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 use Tests\TestCase;
 
 class SchoolProfileApiTest extends TestCase
@@ -16,6 +17,7 @@ class SchoolProfileApiTest extends TestCase
     {
         parent::setUp();
         Storage::fake('public');
+        $this->actingAs(User::factory()->create());
     }
 
     public function test_can_get_school_profile(): void

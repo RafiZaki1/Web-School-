@@ -1,9 +1,10 @@
 # Web-School-
 
-Backend REST API untuk Landing Page dan Manajemen Sekolah.
+Backend Laravel dengan frontend Blade untuk Landing Page dan REST API untuk manajemen sekolah.
 
 ## Tech Stack
-- PHP (PHP Murni / Native PHP 8.3+)
+- Laravel / PHP 8.3+
+- Laravel Blade + Vite + Tailwind CSS
 - MySQL Database
 - RESTful API Architecture (JSON Response Standard)
 
@@ -14,11 +15,13 @@ Backend REST API untuk Landing Page dan Manajemen Sekolah.
 - **feat: Room and facility management**: Manajemen data ruangan sekolah beserta fasilitas di setiap ruangan.
 - **feat: Landing page aggregation and statistics**: Agregasi data landing page dan statistik ringkasan sekolah.
 
-## API Endpoints Overview
-- `GET /api/home` - Agregasi data landing page
-- `GET /api/statistics` - Statistik dan ringkasan data sekolah
-- `GET /api/school-profile` - Informasi profil sekolah
-- `GET /api/heroes` - Daftar hero banner aktif
-- `GET /api/galleries` - Galeri dan album foto sekolah
-- `GET /api/rooms` - Daftar fasilitas dan ruangan sekolah
-- `GET /api/rooms/{id}` - Detail ruangan dan daftar fasilitas di dalamnya
+## Routing Overview
+- `GET /` - Landing page Blade, menggunakan data service Laravel secara langsung.
+- `GET /api/v1/public/home` - Agregasi data landing page dalam JSON.
+- `GET /api/v1/public/statistics` - Statistik sekolah.
+- `GET /api/v1/public/school-profile` - Profil sekolah.
+- `GET /api/v1/public/heroes` - Daftar hero aktif.
+- `GET /api/v1/public/galleries` - Galeri sekolah.
+- `GET /api/v1/public/rooms` - Daftar ruangan aktif.
+- `GET /api/v1/public/rooms/{id}` - Detail ruangan dan fasilitas.
+- `/api/v1/admin/*` - Endpoint CRUD admin, dilindungi middleware `auth`.

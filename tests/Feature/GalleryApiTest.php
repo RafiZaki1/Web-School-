@@ -6,6 +6,7 @@ use App\Models\Gallery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 use Tests\TestCase;
 
 class GalleryApiTest extends TestCase
@@ -16,6 +17,7 @@ class GalleryApiTest extends TestCase
     {
         parent::setUp();
         Storage::fake('public');
+        $this->actingAs(User::factory()->create());
     }
 
     public function test_can_list_all_galleries_and_filter_by_category(): void

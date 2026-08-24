@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Public;
 
-use App\Contracts\HomeServiceInterface;
+use App\Contracts\Interfaces\HomeServiceInterface;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HomeResource;

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Contracts\GalleryServiceInterface;
+use App\Contracts\Interfaces\GalleryServiceInterface;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Gallery\StoreGalleryRequest;

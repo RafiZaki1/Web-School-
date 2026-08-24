@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Public;
 
-use App\Contracts\RoomServiceInterface;
+use App\Contracts\Interfaces\RoomServiceInterface;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FacilityResource;

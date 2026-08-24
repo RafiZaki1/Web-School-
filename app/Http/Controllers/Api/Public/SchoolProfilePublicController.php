@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Public;
 
-use App\Contracts\SchoolProfileServiceInterface;
+use App\Contracts\Interfaces\SchoolProfileServiceInterface;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SchoolProfileResource;

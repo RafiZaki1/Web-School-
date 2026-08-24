@@ -41,7 +41,7 @@ Route::prefix('v1')->group(function () {
     // ==========================================
     // ADMIN ROUTES
     // ==========================================
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('auth')->group(function () {
         // Heroes
         Route::get('/heroes', [AdminHeroController::class, 'index']);
         Route::post('/heroes', [AdminHeroController::class, 'store']);

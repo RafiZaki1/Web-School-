@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Contracts\SchoolProfileServiceInterface;
+use App\Contracts\Interfaces\SchoolProfileServiceInterface;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SchoolProfile\UpdateSchoolProfileRequest;
