@@ -2,12 +2,14 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Resources\Concerns\FormatsImageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class HeroResource extends JsonResource
 {
+    use FormatsImageUrl;
+
     /**
      * Transform the resource into an array.
      *
@@ -28,21 +30,5 @@ class HeroResource extends JsonResource
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];
-    }
-
-    /**
-     * Format full image URL.
-     */
-    protected function formatImageUrl(?string $path): ?string
-    {
-        if (!$path) {
-            return null;
-        }
-
-        if (filter_var($path, FILTER_VALIDATE_URL)) {
-            return $path;
-        }
-
-        return url(Storage::url($path));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\landingpageservices;
+namespace App\Services\LandingPage;
 
 use App\Contracts\Interfaces\StatisticServiceInterface;
 use App\Contracts\Interfaces\StatisticRepositoryInterface;

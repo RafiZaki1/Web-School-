@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\landingpageservices;
+namespace App\Services\LandingPage;
 
 use App\Contracts\Interfaces\FileUploadServiceInterface;
 use App\Contracts\Interfaces\HeroRepositoryInterface;

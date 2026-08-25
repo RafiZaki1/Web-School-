@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\landingpageservices;
+namespace App\Services\LandingPage;
 
 use App\Contracts\Interfaces\GalleryServiceInterface;
 use App\Contracts\Interfaces\HeroServiceInterface;

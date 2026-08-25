@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\SchoolProfileController as AdminSchoolProfile
 use App\Http\Controllers\Api\Public\GalleryPublicController;
 use App\Http\Controllers\Api\Public\HomeController;
 use App\Http\Controllers\Api\Public\HeroPublicController;
+use App\Http\Controllers\Api\Public\RoomPublicController;
 use App\Http\Controllers\Api\Public\SchoolProfilePublicController;
 use App\Http\Controllers\Api\Public\StatisticController;
 use Illuminate\Support\Facades\Route;
@@ -33,9 +34,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/school-profile', [SchoolProfilePublicController::class, 'show']);
 
         // Rooms & Interactive Floor Plan
-        Route::get('/rooms', [\App\Http\Controllers\Api\Public\RoomPublicController::class, 'index']);
-        Route::get('/rooms/{room}', [\App\Http\Controllers\Api\Public\RoomPublicController::class, 'show']);
-        Route::get('/rooms/{room}/facilities', [\App\Http\Controllers\Api\Public\RoomPublicController::class, 'facilities']);
+        Route::get('/rooms', [RoomPublicController::class, 'index']);
+        Route::get('/rooms/{room}', [RoomPublicController::class, 'show']);
+        Route::get('/rooms/{room}/facilities', [RoomPublicController::class, 'facilities']);
     });
 
     // ==========================================

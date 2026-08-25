@@ -19,13 +19,13 @@ use App\Contracts\Repositories\HeroRepository;
 use App\Contracts\Repositories\RoomRepository;
 use App\Contracts\Repositories\SchoolProfileRepository;
 use App\Contracts\Repositories\StatisticRepository;
-use App\Services\landingpageservices\FileUploadService;
-use App\Services\landingpageservices\GalleryService;
-use App\Services\landingpageservices\HeroService;
-use App\Services\landingpageservices\HomeService;
-use App\Services\landingpageservices\RoomService;
-use App\Services\landingpageservices\SchoolProfileService;
-use App\Services\landingpageservices\StatisticService;
+use App\Services\LandingPage\FileUploadService;
+use App\Services\LandingPage\GalleryService;
+use App\Services\LandingPage\HeroService;
+use App\Services\LandingPage\HomeService;
+use App\Services\LandingPage\RoomService;
+use App\Services\LandingPage\SchoolProfileService;
+use App\Services\LandingPage\StatisticService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
 
         FileUploadServiceInterface::class => FileUploadService::class,
     ];
+
     /**
      * Register any application services.
      */
@@ -55,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
             $this->app->bind($index, $value);
         }
     }
+
     /**
      * Bootstrap any application services.
      */
