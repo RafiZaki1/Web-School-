@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ data_get($home, 'school_profile.school_name', data_get($home, 'hero.school_name', config('app.name'))) }}</title>
+    
+    {{-- Favicon Logo Resmi SMKN 2 Kota Mojokerto --}}
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-smkn2.png') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-smkn2.png') }}">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -121,7 +127,7 @@
         </div>
 
         {{-- Arc Carousel: Posisi dinaikkan & Lengkungan lebih jelas (arcDrop = 120px) --}}
-        <div id="arc-carousel-section" class="relative w-full -mt-2 sm:-mt-6 pb-6" style="min-height:310px;">
+        <div id="arc-carousel-section" class="relative w-full -mt-2 sm:-mt-6 pb-12 sm:pb-16" style="min-height:340px;">
             <div id="arc-carousel" class="relative w-full overflow-visible" style="height:290px;">
                 {{-- Foto dirender via JS --}}
             </div>
@@ -321,86 +327,135 @@
         })();
     </script>
 
-    {{-- ============ QUOTE + STATS (Dibawah Landing Awal, Tidak Menimpa Hero) ============ --}}
-    <section class="relative z-10 mt-16 sm:mt-20 px-5 lg:px-8">
-        <div class="mx-auto max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-900/10">
-            <div class="relative grid gap-0 sm:grid-cols-[1fr_320px]">
-                {{-- Kutipan --}}
-                <div class="relative flex flex-col justify-center overflow-hidden p-8 sm:p-10">
-                    @if ($quoteBg = $imageUrl(data_get($galleries->first(), 'image')))
-                    <img src="{{ $quoteBg }}" alt="" class="absolute inset-0 h-full w-full object-cover">
-                    <div class="absolute inset-0 bg-slate-950/55 backdrop-blur-[2px]"></div>
-                    @else
-                    <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950"></div>
-                    @endif
+    {{-- ============ SAMBUTAN KEPALA SEKOLAH (SESUAI UKURAN FIGMA: 1200 x 675) ============ --}}
+    <section class="relative z-10 px-4 sm:px-6 lg:px-8" style="margin-top: 130px !important; margin-bottom: 90px !important;">
+        <div class="mx-auto w-full max-w-[1200px] min-h-[675px] lg:h-[675px] overflow-hidden rounded-3xl sm:rounded-[36px] border border-white/20 bg-slate-900 shadow-2xl shadow-slate-950/40 relative flex flex-col justify-between">
+            
+            {{-- Background Photo: Lapangan Upacara SMKN 2 Mojokerto --}}
+            <img
+                src="{{ asset('images/sambutan-bg.jpg') }}"
+                alt="Kegiatan SMKN 2 Mojokerto"
+                class="absolute inset-0 h-full w-full object-cover object-center"
+            />
+            {{-- Soft Gradient Vignette Overlay for Crisp Contrast --}}
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/45 to-transparent"></div>
 
-                    <div class="relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-lime-400/70">
-                            <path d="M7.17 6C4.87 6 3 7.87 3 10.17c0 2.3 1.87 4.17 4.17 4.17.34 0 .68-.05 1-.13-.5 1.6-1.9 2.79-3.63 2.79v2c3.5 0 6.3-2.55 6.3-6.66V10.17C10.84 7.87 8.97 6 7.17 6Zm10 0C14.87 6 13 7.87 13 10.17c0 2.3 1.87 4.17 4.17 4.17.34 0 .68-.05 1-.13-.5 1.6-1.9 2.79-3.63 2.79v2c3.5 0 6.3-2.55 6.3-6.66V10.17C20.84 7.87 18.97 6 17.17 6Z" />
+            {{-- Main Content Layer (Upper & Middle) --}}
+            <div class="relative z-10 flex-1 flex flex-col justify-between p-6 sm:p-10 lg:p-12">
+                
+                {{-- Top Badge: Terakreditasi "A" --}}
+                <div class="flex items-center">
+                    <span class="inline-flex items-center gap-2 rounded-full bg-amber-400 text-amber-950 px-4 py-1.5 text-xs sm:text-sm font-black shadow-md tracking-wider">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 text-amber-950">
+                            <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z" clip-rule="evenodd" />
                         </svg>
-                        <p class="mt-3 text-lg font-semibold leading-snug text-white sm:text-xl">
-                            {{ data_get($profile, 'welcome_message', 'Pendidikan vokasi adalah kunci kemandirian bangsa. Kami mendidik dengan hati, mengasah kompetensi, dan mencetak generasi yang tangguh menghadapi tantangan global.') }}
-                        </p>
-                        <p class="mt-5 text-sm font-bold text-lime-400">
-                            {{ data_get($profile, 'principal_name', 'Kepala Sekolah') }}
-                        </p>
-                        <p class="text-xs font-medium text-slate-300">
-                            {{ data_get($profile, 'principal_position', 'Kepala Sekolah') }}
-                        </p>
-                    </div>
-                </div>
-
-                {{-- Foto kepala sekolah --}}
-                <div class="relative hidden min-h-[260px] sm:block">
-                    @if ($photo = $imageUrl(data_get($profile, 'principal_photo')))
-                    <img src="{{ $photo }}" alt="{{ data_get($profile, 'principal_name', 'Kepala Sekolah') }}" class="absolute inset-0 h-full w-full object-cover">
-                    @else
-                    <div class="absolute inset-0 bg-slate-200"></div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Stats bar --}}
-            <div class="grid grid-cols-2 divide-x divide-y divide-slate-100 border-t border-slate-100 sm:grid-cols-5 sm:divide-y-0">
-                @foreach ($statItems as $stat)
-                <div class="flex items-center gap-3 px-4 py-5">
-                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $stat['color'] }} text-white">
-                        @switch($stat['icon'])
-                        @case('users')
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4.5 w-4.5">
-                            <path d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0-.41 1.412A9.957 9.957 0 0 0 10 18a9.959 9.959 0 0 0 6.945-2.095 1.229 1.229 0 0 0-.41-1.412A9.99 9.99 0 0 0 10 12a9.99 9.99 0 0 0-6.535 2.493Z" />
-                        </svg>
-                        @break
-                        @case('user-check')
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4.5 w-4.5">
-                            <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.5 7.25c0-2.9 3.5-4.75 5.5-4.75 1.05 0 2.42.51 3.55 1.36a4.5 4.5 0 0 0-.05 4.64c-1 .3-2.2.5-3.5.5-2.9 0-5.5-.85-5.5-1.75ZM17.03 12.03a.75.75 0 0 0-1.06-1.06l-2.72 2.72-1.22-1.22a.75.75 0 1 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.25-3.25Z" clip-rule="evenodd" />
-                        </svg>
-                        @break
-                        @case('calendar')
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4.5 w-4.5">
-                            <path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd" />
-                        </svg>
-                        @break
-                        @case('briefcase')
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4.5 w-4.5">
-                            <path fill-rule="evenodd" d="M7.5 5.5A2.5 2.5 0 0 1 10 3h0a2.5 2.5 0 0 1 2.5 2.5V6h3A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5v-7A1.5 1.5 0 0 1 4.5 6h3v-.5ZM9 6h2v-.5a1 1 0 0 0-1-1h0a1 1 0 0 0-1 1V6Z" clip-rule="evenodd" />
-                        </svg>
-                        @break
-                        @default
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4.5 w-4.5">
-                            <path fill-rule="evenodd" d="M16.704 5.29a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.296 9.5a.75.75 0 1 1 1.06-1.06l3.567 3.566 6.72-6.72a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                        </svg>
-                        @endswitch
+                        TERAKREDITASI &quot;A&quot;
                     </span>
-                    <div>
-                        <p class="text-base font-extrabold leading-none text-slate-950">
-                            {{ data_get($statistics, $stat['key'], '-') }}{{ $stat['suffix'] }}
-                        </p>
-                        <p class="mt-1 text-[11px] font-medium leading-none text-slate-500">{{ $stat['label'] }}</p>
-                    </div>
                 </div>
-                @endforeach
+
+                {{-- Center Content: Glassmorphic Quote Card + Headmaster Standout --}}
+                <div class="my-auto py-6 grid grid-cols-1 lg:grid-cols-[1fr_auto] items-center">
+                    
+                    {{-- Glass Quote Card --}}
+                    <div class="max-w-[560px] rounded-2xl sm:rounded-3xl bg-slate-950/45 backdrop-blur-md border border-white/20 p-6 sm:p-8 text-white shadow-2xl">
+                        <p class="text-base sm:text-lg lg:text-[19px] font-semibold leading-relaxed text-white drop-shadow-sm">
+                            &ldquo;Pendidikan vokasi adalah kunci kemandirian bangsa. Kami mendidik dengan hati, mengasah kompetensi, dan mencetak generasi yang tangguh menghadapi tantangan global.&rdquo;
+                        </p>
+                        <div class="mt-5">
+                            <p class="text-base sm:text-lg font-bold text-lime-400 tracking-wide">
+                                Bapak Iswahyudi, S.ST.
+                            </p>
+                            <p class="text-xs sm:text-sm font-medium text-slate-200/90 mt-0.5">
+                                Kepala SMKN 2 Mojokerto
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- Empty placeholder spacer --}}
+                <div></div>
             </div>
+
+            {{-- Cutout Foto Kepala Sekolah (Positioned Bottom Right, W: 466px x H: 604px) --}}
+            <img
+                src="{{ asset('images/kepala-sekolah.png') }}"
+                alt="Bapak Iswahyudi, S.ST."
+                class="absolute bottom-0 right-2 sm:right-6 lg:right-10 w-[300px] sm:w-[380px] lg:w-[466px] max-h-[604px] object-contain object-bottom pointer-events-none drop-shadow-2xl z-20"
+            />
+
+            {{-- Bottom Stats Bar (Dark Navy Glass Capsule) --}}
+            <div class="relative z-30 bg-[#0c2f4a]/95 backdrop-blur-md border-t border-white/10 px-6 sm:px-10 lg:px-12 py-4 sm:py-5">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 divide-y sm:divide-y-0 divide-white/5">
+                    
+                    {{-- 1. Siswa Aktif --}}
+                    <div class="flex items-center gap-3 py-1">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-500/20 text-sky-400 border border-sky-400/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                                <path d="M10 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0-.41 1.412A9.957 9.957 0 0 0 10 18a9.959 9.959 0 0 0 6.945-2.095 1.229 1.229 0 0 0-.41-1.412A9.99 9.99 0 0 0 10 12a9.99 9.99 0 0 0-6.535 2.493Z" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-base sm:text-lg font-extrabold text-white leading-none">1.850+</p>
+                            <p class="mt-1 text-xs font-medium text-slate-300 leading-none">Siswa Aktif</p>
+                        </div>
+                    </div>
+
+                    {{-- 2. Tenaga Pendidik --}}
+                    <div class="flex items-center gap-3 py-1">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                                <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.5 7.25c0-2.9 3.5-4.75 5.5-4.75 1.05 0 2.42.51 3.55 1.36a4.5 4.5 0 0 0-.05 4.64c-1 .3-2.2.5-3.5.5-2.9 0-5.5-.85-5.5-1.75ZM17.03 12.03a.75.75 0 0 0-1.06-1.06l-2.72 2.72-1.22-1.22a.75.75 0 1 0-1.06 1.06l1.75 1.75a.75.75 0 0 0 1.06 0l3.25-3.25Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-base sm:text-lg font-extrabold text-white leading-none">120+</p>
+                            <p class="mt-1 text-xs font-medium text-slate-300 leading-none">Tenaga Pendidik</p>
+                        </div>
+                    </div>
+
+                    {{-- 3. Tahun Berdiri --}}
+                    <div class="flex items-center gap-3 py-1">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-600/20 text-sky-300 border border-sky-400/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                                <path fill-rule="evenodd" d="M5.75 2a.75.75 0 0 1 .75.75V4h7V2.75a.75.75 0 0 1 1.5 0V4h.25A2.75 2.75 0 0 1 18 6.75v8.5A2.75 2.75 0 0 1 15.25 18H4.75A2.75 2.75 0 0 1 2 15.25v-8.5A2.75 2.75 0 0 1 4.75 4H5V2.75A.75.75 0 0 1 5.75 2Zm-1 5.5c-.69 0-1.25.56-1.25 1.25v6.5c0 .69.56 1.25 1.25 1.25h10.5c.69 0 1.25-.56 1.25-1.25v-6.5c0-.69-.56-1.25-1.25-1.25H4.75Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-base sm:text-lg font-extrabold text-white leading-none">2014</p>
+                            <p class="mt-1 text-xs font-medium text-slate-300 leading-none">Tahun Berdiri</p>
+                        </div>
+                    </div>
+
+                    {{-- 4. Program Keahlian --}}
+                    <div class="flex items-center gap-3 py-1">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-amber-400 border border-amber-400/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                                <path fill-rule="evenodd" d="M7.5 5.5A2.5 2.5 0 0 1 10 3h0a2.5 2.5 0 0 1 2.5 2.5V6h3A1.5 1.5 0 0 1 17 7.5v7A1.5 1.5 0 0 1 15.5 16h-11A1.5 1.5 0 0 1 3 14.5v-7A1.5 1.5 0 0 1 4.5 6h3v-.5ZM9 6h2v-.5a1 1 0 0 0-1-1h0a1 1 0 0 0-1 1V6Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-base sm:text-lg font-extrabold text-white leading-none">5</p>
+                            <p class="mt-1 text-xs font-medium text-slate-300 leading-none">Program Keahlian</p>
+                        </div>
+                    </div>
+
+                    {{-- 5. Alumni Kerja --}}
+                    <div class="flex items-center gap-3 py-1">
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-400/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="text-base sm:text-lg font-extrabold text-white leading-none">1.000+</p>
+                            <p class="mt-1 text-xs font-medium text-slate-300 leading-none">Alumni Kerja</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -546,49 +601,51 @@
         </main>
 
 
-        {{-- ============ FOOTER ============ --}}
+        {{-- ============ FOOTER (FULL WIDTH SEPERTI NAVBAR & TEKS WARNA PUTIH) ============ --}}
         <footer id="kontak" class="bg-gradient-to-b from-[#0b3344] via-[#092937] to-[#061e29] text-white">
-            <div class="mx-auto max-w-7xl px-5 pt-16 pb-12 lg:px-8">
-                <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8 items-start">
+            <div class="mx-auto w-full max-w-[1280px] px-6 lg:px-8 pt-14 pb-8 flex flex-col justify-between">
+                
+                {{-- Top/Main Footer Columns (Stretched Full Width Across Grid) --}}
+                <div class="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8 items-start w-full">
 
                     {{-- Column 1: School Card & Motto --}}
-                    <div class="lg:col-span-4 space-y-5">
-                        <div class="inline-flex rounded-2xl bg-white px-5 py-3.5 shadow-xl">
-                            <img src="{{ asset('smk2-footer.png') }}" alt="Logo SMK Negeri 2 Kota Mojokerto" class="h-10 sm:h-12 w-auto object-contain">
+                    <div class="lg:col-span-4 space-y-4">
+                        <div class="inline-flex rounded-2xl bg-white px-5 py-3 shadow-xl">
+                            <img src="{{ asset('smk2-footer.png') }}" alt="Logo SMK Negeri 2 Kota Mojokerto" class="h-10 sm:h-11 w-auto object-contain">
                         </div>
-                        <p class="text-xs sm:text-sm text-cyan-100/80 leading-relaxed max-w-sm">
+                        <p class="text-xs sm:text-[13px] text-white/90 leading-relaxed max-w-sm font-medium">
                             Kami Siap Melayani Masyarakat Pendidikan Dan Pembelajaran Berbasis Budaya Kerja, Disiplin Dan Berprestasi.
                         </p>
                     </div>
 
                     {{-- Column 2: MENU UTAMA --}}
-                    <div class="lg:col-span-3 space-y-4">
+                    <div class="lg:col-span-2 space-y-4">
                         <div>
-                            <h4 class="text-xs font-extrabold uppercase tracking-widest text-cyan-300">MENU UTAMA</h4>
-                            <div class="mt-1 h-0.5 w-6 bg-cyan-400 rounded-full"></div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-white">MENU UTAMA</h4>
+                            <div class="mt-1.5 h-0.5 w-7 bg-white/80 rounded-full"></div>
                         </div>
-                        <ul class="space-y-2.5 text-xs sm:text-sm text-cyan-100/90 font-medium">
+                        <ul class="space-y-2.5 text-xs sm:text-[13px] text-white font-medium">
                             <li>
-                                <a href="#beranda" class="inline-flex items-center gap-2 hover:text-white transition group">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 group-hover:scale-125 transition"></span>
+                                <a href="#beranda" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
                                     <span>Beranda</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#profil" class="inline-flex items-center gap-2 hover:text-white transition group">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 group-hover:scale-125 transition"></span>
+                                <a href="#profil" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
                                     <span>Tentang Kami</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#jurusan" class="inline-flex items-center gap-2 hover:text-white transition group">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 group-hover:scale-125 transition"></span>
+                                <a href="#jurusan" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
                                     <span>Profil Jurusan</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="#ppdb" class="inline-flex items-center gap-2 hover:text-white transition group">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-cyan-400 group-hover:scale-125 transition"></span>
+                                <a href="#ppdb" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
                                     <span>PPDB</span>
                                 </a>
                             </li>
@@ -598,24 +655,24 @@
                     {{-- Column 3: SOSMED KAMI --}}
                     <div class="lg:col-span-2 space-y-4">
                         <div>
-                            <h4 class="text-xs font-extrabold uppercase tracking-widest text-cyan-300">SOSMED KAMI</h4>
-                            <div class="mt-1 h-0.5 w-6 bg-cyan-400 rounded-full"></div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-white">SOSMED KAMI</h4>
+                            <div class="mt-1.5 h-0.5 w-7 bg-white/80 rounded-full"></div>
                         </div>
                         <div class="flex items-center gap-3 text-white">
                             {{-- Facebook --}}
-                            <a href="https://facebook.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#0b3344] transition shadow-sm" title="Facebook SMKN 2 Kota Mojokerto">
+                            <a href="https://facebook.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#0b3344] transition-all hover:scale-110 shadow-sm" title="Facebook SMKN 2 Kota Mojokerto">
                                 <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.7 5H18V0h-3.808C10.597 0 9 1.583 9 4.615V8z" />
                                 </svg>
                             </a>
                             {{-- Instagram --}}
-                            <a href="https://www.instagram.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#0b3344] transition shadow-sm" title="Instagram @smkn2kotamojokerto">
+                            <a href="https://www.instagram.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#0b3344] transition-all hover:scale-110 shadow-sm" title="Instagram @smkn2kotamojokerto">
                                 <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                                 </svg>
                             </a>
                             {{-- TikTok --}}
-                            <a href="https://tiktok.com/@smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white hover:text-[#0b3344] transition shadow-sm" title="TikTok SMKN 2 Kota Mojokerto">
+                            <a href="https://tiktok.com/@smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#0b3344] transition-all hover:scale-110 shadow-sm" title="TikTok SMKN 2 Kota Mojokerto">
                                 <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
                                 </svg>
@@ -623,17 +680,17 @@
                         </div>
                     </div>
 
-                    {{-- Column 4: ALAMAT (Map Card) --}}
-                    <div class="lg:col-span-3 space-y-4">
+                    {{-- Column 4: ALAMAT (Map Card Resmi SMKN 2 Mojokerto di Pulorejo) --}}
+                    <div class="lg:col-span-4 space-y-4">
                         <div>
-                            <h4 class="text-xs font-extrabold uppercase tracking-widest text-cyan-300">ALAMAT</h4>
-                            <div class="mt-1 h-0.5 w-6 bg-cyan-400 rounded-full"></div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-white">LOKASI &amp; ALAMAT</h4>
+                            <div class="mt-1.5 h-0.5 w-7 bg-white/80 rounded-full"></div>
                         </div>
-                        <div class="overflow-hidden rounded-2xl border border-white/10 bg-[#051c27] shadow-xl">
+                        <div class="overflow-hidden rounded-2xl border border-white/15 bg-[#051c27] shadow-xl">
                             {{-- Map Embed / View --}}
                             <div class="relative h-28 w-full bg-slate-200">
                                 <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3956.1202868158074!2d112.43477147574768!3d-7.451952073444062!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e780d6b6d51dc77%3A0x2dbf137e55541604!2sSMK%20Negeri%202%20Kota%20Mojokerto!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+                                    src="https://maps.google.com/maps?q=SMK+Negeri+2+Kota+Mojokerto,+Jl.+Raya+Pulorejo,+Kota+Mojokerto&t=&z=16&ie=UTF8&iwloc=&output=embed"
                                     width="100%"
                                     height="100%"
                                     style="border:0;"
@@ -643,37 +700,38 @@
                                     class="h-full w-full object-cover"></iframe>
                             </div>
                             {{-- Map Bottom Bar --}}
-                            <div class="flex items-center gap-3 p-3 bg-[#061d28]">
-                                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-md">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                            <div class="flex items-start gap-2.5 p-3 bg-[#061d28]">
+                                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/20 text-white shadow-md mt-0.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5">
                                         <path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.77 11.77 0 0 0 1.039.573l.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" />
                                     </svg>
                                 </span>
-                                <p class="text-[11px] leading-tight text-cyan-100/90 font-medium">
-                                    Jl. Raya Ijen No. 9, Wates, Magersari, Kota Mojokerto
-                                </p>
+                                <div>
+                                    <p class="text-[11px] leading-snug text-white font-medium">
+                                        Jl. Raya Pulorejo, Mergelo, Pulorejo, Kec. Prajurit Kulon, Kota Mojokerto, Jawa Timur 61325
+                                    </p>
+                                    <p class="text-[10px] text-white/80 font-bold mt-0.5">Plus Code: GCPF+6HJ</p>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                 </div>
-            </div>
 
-            {{-- Bottom Sub-Footer Bar --}}
-            <div class="border-t border-cyan-950/60 bg-[#041620] px-5 py-4 text-xs text-slate-300 lg:px-8">
-                <div class="mx-auto flex max-w-7xl flex-col sm:flex-row items-center justify-between gap-3">
-                    <p class="text-slate-300 text-center sm:text-left">
+                {{-- Bottom Sub-Footer Bar (Full Width Sesuai Navbar) --}}
+                <div class="mt-10 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/90">
+                    <p class="text-white/90 text-center sm:text-left">
                         &copy; {{ date('Y') }} SMK Negeri 2 Mojokerto. Hak Cipta Dilindungi.
                     </p>
-                    <div class="flex flex-wrap items-center justify-center gap-6 font-medium text-slate-200">
-                        <a href="tel:0321387356" class="inline-flex items-center gap-2 hover:text-cyan-300 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-cyan-400">
+                    <div class="flex flex-wrap items-center justify-center gap-6 font-medium text-white">
+                        <a href="tel:0321387356" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-white">
                                 <path fill-rule="evenodd" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h1.148a1.5 1.5 0 0 1 1.465 1.175l.716 3.223a1.5 1.5 0 0 1-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 0 0 6.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 0 1 1.767-1.052l3.223.716A1.5 1.5 0 0 1 18 15.352V16.5a1.5 1.5 0 0 1-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 0 1 2.43 8.326 13.019 13.019 0 0 1 2 5V3.5Z" clip-rule="evenodd" />
                             </svg>
                             <span>0321 387356</span>
                         </a>
-                        <a href="mailto:smkn2mr@gmail.com" class="inline-flex items-center gap-2 hover:text-cyan-300 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-cyan-400">
+                        <a href="mailto:smkn2mr@gmail.com" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 text-white">
                                 <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
                                 <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
                             </svg>
@@ -681,6 +739,7 @@
                         </a>
                     </div>
                 </div>
+
             </div>
         </footer>
 
