@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\GalleryController as AdminGalleryController;
 use App\Http\Controllers\Api\Admin\HeroController as AdminHeroController;
 use App\Http\Controllers\Api\Admin\SchoolProfileController as AdminSchoolProfileController;
+use App\Http\Controllers\Api\Public\ChatbotController as PublicChatbotController;
 use App\Http\Controllers\Api\Public\GalleryPublicController;
 use App\Http\Controllers\Api\Public\HomeController;
 use App\Http\Controllers\Api\Public\HeroPublicController;
@@ -32,6 +33,9 @@ Route::prefix('v1')->group(function () {
         Route::get('/heroes', [HeroPublicController::class, 'index']);
         Route::get('/galleries', [GalleryPublicController::class, 'index']);
         Route::get('/school-profile', [SchoolProfilePublicController::class, 'show']);
+
+        // Chatbot AI
+        Route::post('/chatbot', [PublicChatbotController::class, 'send']);
 
         // Rooms & Interactive Floor Plan
         Route::get('/rooms', [RoomPublicController::class, 'index']);

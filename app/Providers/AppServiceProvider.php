@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\Interfaces\ChatbotServiceInterface;
 use App\Contracts\Interfaces\FileUploadServiceInterface;
 use App\Contracts\Interfaces\GalleryServiceInterface;
 use App\Contracts\Interfaces\HeroServiceInterface;
@@ -19,6 +20,7 @@ use App\Contracts\Repositories\HeroRepository;
 use App\Contracts\Repositories\RoomRepository;
 use App\Contracts\Repositories\SchoolProfileRepository;
 use App\Contracts\Repositories\StatisticRepository;
+use App\Services\LandingPage\ChatbotService;
 use App\Services\LandingPage\FileUploadService;
 use App\Services\LandingPage\GalleryService;
 use App\Services\LandingPage\HeroService;
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         RoomServiceInterface::class => RoomService::class,
         SchoolProfileServiceInterface::class => SchoolProfileService::class,
         StatisticServiceInterface::class => StatisticService::class,
+        ChatbotServiceInterface::class => ChatbotService::class,
 
         FileUploadServiceInterface::class => FileUploadService::class,
     ];
