@@ -15,14 +15,15 @@ class LandingPageSeeder extends Seeder
     public function run(): void
     {
         // 1. Hero Landing Page
-        Hero::firstOrCreate(
-            ['title' => 'Membangun Generasi Unggul dan Berakhlak Mulia'],
+        Hero::updateOrCreate(
+            ['id' => 1],
             [
-                'school_name' => 'Jakarta Honors International College (JHIC)',
-                'description' => 'Mewujudkan pendidikan berstandar internasional dengan fondasi karakter kepemimpinan yang tangguh, adaptif, dan berwawasan global.',
+                'title' => 'Membangun Generasi Vokasi Unggul & Berakhlak Mulia',
+                'school_name' => 'SMK NEGERI 2 KOTA MOJOKERTO',
+                'description' => 'Mewujudkan pendidikan kejuruan berstandar industri dengan 4 program keahlian unggulan: RPL, DKV, APHP, dan Tata Boga.',
                 'background_image' => null,
-                'button_text' => 'Daftar Sekarang',
-                'button_url' => 'https://jhic.sch.id/pendaftaran',
+                'button_text' => 'Jelajahi Jurusan',
+                'button_url' => '#jurusan',
                 'is_active' => true,
                 'sort_order' => 1,
             ]
@@ -38,21 +39,21 @@ class LandingPageSeeder extends Seeder
                 'sort_order' => 1,
             ],
             [
-                'title' => 'Juara 1 Olimpiade Sains Nasional Tingkat Provinsi',
+                'title' => 'Juara 1 LKS Tingkat Provinsi Jawa Timur',
                 'image' => 'galleries/sample-achievement-1.jpg',
                 'category' => 'Prestasi',
                 'is_active' => true,
                 'sort_order' => 2,
             ],
             [
-                'title' => 'Laboratorium Komputer & Multimedia Modern',
+                'title' => 'Laboratorium Komputer & Studio DKV Modern',
                 'image' => 'galleries/sample-facility-1.jpg',
                 'category' => 'Fasilitas',
                 'is_active' => true,
                 'sort_order' => 3,
             ],
             [
-                'title' => 'Ekstrakurikuler Robotik dan Coding',
+                'title' => 'Praktik Dapur Kuliner Tata Boga & APHP',
                 'image' => 'galleries/sample-activity-2.jpg',
                 'category' => 'Kegiatan',
                 'is_active' => true,
@@ -71,14 +72,14 @@ class LandingPageSeeder extends Seeder
         SchoolProfile::updateOrCreate(
             ['id' => 1],
             [
-                'school_name' => 'Jakarta Honors International College (JHIC)',
-                'school_logo' => null,
-                'principal_name' => 'Dr. H. Muhammad Arifin, M.Pd.',
+                'school_name' => 'SMK NEGERI 2 KOTA MOJOKERTO',
+                'school_logo' => 'school-profile/logo.svg',
+                'principal_name' => 'Drs. Akhmad Mukhlason, M.M.Pd.',
                 'principal_position' => 'Kepala Sekolah',
                 'principal_photo' => null,
-                'welcome_message' => 'Selamat datang di website resmi Jakarta Honors International College (JHIC). Kami berkomitmen memberikan pengalaman belajar terbaik yang memadukan keunggulan akademik, teknologi modern, dan penanaman nilai budi pekerti luhur bagi seluruh peserta didik kami.',
+                'welcome_message' => 'Selamat datang di website resmi SMK Negeri 2 Kota Mojokerto. Kami berkomitmen memberikan pengalaman belajar terbaik yang memadukan keunggulan kompetensi kejuruan, teknologi modern, dan penanaman budi pekerti luhur bagi seluruh peserta didik.',
                 'background_image' => null,
-                'established_year' => 2014,
+                'established_year' => 2004,
             ]
         );
     }
