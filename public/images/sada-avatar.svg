@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" fill="none">
+    <defs>
+        <!-- Soft Drop Shadow on bottom -->
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#3b82f6" flood-opacity="0.25" />
+        </filter>
+        
+        <!-- Visor Glow -->
+        <filter id="visorGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+
+        <!-- Eye Glow -->
+        <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" flood-color="#38bdf8" flood-opacity="0.8" />
+        </filter>
+
+        <!-- Spherical Head Gradient -->
+        <radialGradient id="sphereGrad" cx="50%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffffff" />
+            <stop offset="65%" stop-color="#f1f5f9" />
+            <stop offset="100%" stop-color="#cbd5e1" />
+        </radialGradient>
+
+        <!-- Neon Gradient Ring -->
+        <linearGradient id="neonRing" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00e5ff" />
+            <stop offset="35%" stop-color="#0088ff" />
+            <stop offset="70%" stop-color="#6366f1" />
+            <stop offset="100%" stop-color="#ec4899" />
+        </linearGradient>
+
+        <!-- Visor Face Gradient -->
+        <linearGradient id="visorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#181e29" />
+            <stop offset="40%" stop-color="#0b0f17" />
+            <stop offset="100%" stop-color="#020408" />
+        </linearGradient>
+
+        <!-- Top Visor Highlight -->
+        <linearGradient id="highlightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+
+    <!-- Base Head Sphere with Shadow -->
+    <circle cx="60" cy="60" r="54" fill="url(#sphereGrad)" filter="url(#softShadow)" />
+
+    <!-- Neon Gradient Outer Ring around Visor -->
+    <ellipse cx="60" cy="56" rx="46" ry="28" fill="url(#neonRing)" />
+
+    <!-- Dark Visor Screen -->
+    <ellipse cx="60" cy="56" rx="42" ry="24.5" fill="url(#visorGrad)" />
+
+    <!-- Glossy Reflection on Top-Left of Visor -->
+    <path d="M28 50 C34 40, 60 36, 88 41 C76 36, 44 36, 28 50 Z" fill="url(#highlightGrad)" />
+
+    <!-- Glowing White Eyes -->
+    <g filter="url(#eyeGlow)">
+        <ellipse cx="44" cy="56" rx="7.5" ry="9" fill="#ffffff" />
+        <ellipse cx="76" cy="56" rx="7.5" ry="9" fill="#ffffff" />
+    </g>
+
+    <!-- Catchlight in eyes -->
+    <circle cx="46.5" cy="53.5" r="2" fill="#ffffff" />
+    <circle cx="78.5" cy="53.5" r="2" fill="#ffffff" />
+</svg>

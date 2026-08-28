@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" fill="none">
+    <defs>
+        <!-- Shadow -->
+        <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000000" flood-opacity="0.3" />
+        </filter>
+        
+        <linearGradient id="shieldBg" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#0284c7" />
+            <stop offset="50%" stop-color="#0369a1" />
+            <stop offset="100%" stop-color="#075985" />
+        </linearGradient>
+
+        <linearGradient id="yellowStar" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fef08a" />
+            <stop offset="50%" stop-color="#eab308" />
+            <stop offset="100%" stop-color="#ca8a04" />
+        </linearGradient>
+    </defs>
+
+    <!-- Outer Pentagon Shield -->
+    <polygon points="100,12 184,70 152,176 48,176 16,70" fill="#0284c7" stroke="#082f49" stroke-width="4" filter="url(#logoShadow)" />
+    
+    <!-- Inner Pentagon Border -->
+    <polygon points="100,20 174,72 144,168 56,168 26,72" fill="#0369a1" stroke="#ffffff" stroke-width="2" />
+
+    <!-- Top Text Banner Arch: SMK NEGERI 2 -->
+    <path id="textArcTop" d="M 38,76 Q 100,28 162,76" fill="none" />
+    <text font-family="'Instrument Sans', Arial, sans-serif" font-weight="900" font-size="11" fill="#ffffff" letter-spacing="1">
+        <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+            SMK NEGERI 2
+        </textPath>
+    </text>
+
+    <!-- Center Yellow Petals / Geometric Star Background -->
+    <g transform="translate(100, 105) scale(0.65)">
+        <!-- Flower Petals -->
+        <circle cx="0" cy="-28" r="20" fill="#facc15" stroke="#ca8a04" stroke-width="2" />
+        <circle cx="28" cy="-8" r="20" fill="#facc15" stroke="#ca8a04" stroke-width="2" />
+        <circle cx="18" cy="24" r="20" fill="#facc15" stroke="#ca8a04" stroke-width="2" />
+        <circle cx="-18" cy="24" r="20" fill="#facc15" stroke="#ca8a04" stroke-width="2" />
+        <circle cx="-28" cy="-8" r="20" fill="#facc15" stroke="#ca8a04" stroke-width="2" />
+        
+        <!-- White Gear Ring -->
+        <circle cx="0" cy="0" r="32" fill="#ffffff" stroke="#0284c7" stroke-width="3" />
+        <circle cx="0" cy="0" r="24" fill="#0369a1" />
+        
+        <!-- Torch & Open Book Emblem -->
+        <!-- Book -->
+        <path d="M-18,12 Q-8,6 0,10 Q8,6 18,12 L15,18 Q8,12 0,16 Q-8,12 -15,18 Z" fill="#ffffff" />
+        <path d="M-18,10 Q-8,4 0,8 Q8,4 18,10 L15,12 Q8,8 0,12 Q-8,8 -15,12 Z" fill="#f87171" />
+        
+        <!-- Torch Handle -->
+        <polygon points="-3,10 3,10 2,-4 -2,-4" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+        <!-- Flame -->
+        <path d="M0,-16 C6,-12 4,-6 0,-4 C-4,-6 -6,-12 0,-16 Z" fill="#ef4444" />
+        <path d="M0,-14 C3,-11 2,-7 0,-5 C-2,-7 -3,-11 0,-14 Z" fill="#fbbf24" />
+        
+        <!-- White Wings / Ribbon Swirl -->
+        <path d="M-20,-4 Q-12,-16 0,-8 Q12,-16 20,-4 Q12,-8 0,0 Q-12,-8 -20,-4 Z" fill="#ffffff" opacity="0.9" />
+    </g>
+
+    <!-- Bottom Ribbon: KOTA MOJOKERTO -->
+    <path id="textArcBottom" d="M 44,146 Q 100,182 156,146" fill="none" />
+    <text font-family="'Instrument Sans', Arial, sans-serif" font-weight="900" font-size="10" fill="#ffffff" letter-spacing="1.5">
+        <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle">
+            KOTA MOJOKERTO
+        </textPath>
+    </text>
+</svg>

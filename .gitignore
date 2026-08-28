@@ -23,4 +23,6 @@
 _ide_helper.php
 Homestead.json
 Homestead.yaml
-Thumbs.db
+/frontend/node_modules
+/frontend/dist
+/frontend/.env
