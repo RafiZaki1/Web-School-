@@ -147,9 +147,30 @@
             </div>
         </div>
 
+        {{-- Anti-Spam Warning Pill / Alert Bar --}}
+        <div id="chatbot-spam-alert" class="hidden mx-3 mb-1.5 flex items-center justify-between gap-2 rounded-xl bg-amber-50 border border-amber-200/80 px-3 py-2 text-[11px] font-semibold text-amber-900 shadow-xs transition-all duration-300">
+            <div class="flex items-center gap-2">
+                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white text-xs font-black">!</span>
+                <span id="chatbot-spam-text">Harap tunggu sejenak sebelum mengirim pesan lagi.</span>
+            </div>
+            <button type="button" onclick="hideSpamAlert()" class="text-amber-600 hover:text-amber-800 text-sm font-bold leading-none p-0.5">×</button>
+        </div>
+
         {{-- Input Capsule Bar --}}
         <form id="chatbot-form" onsubmit="handleChatSubmit(event)" class="border-t border-slate-200/80 bg-white p-2.5">
             @csrf
+            
+            {{-- Honeypot Bot Trap (Invisible to real humans, traps automated spam bots) --}}
+            <input
+                type="text"
+                id="sada_security_code"
+                name="sada_security_code"
+                tabindex="-1"
+                autocomplete="off"
+                class="hidden"
+                style="display:none !important; position:absolute; left:-9999px;"
+            />
+
             <div class="flex items-center gap-2 rounded-full bg-slate-100 px-2.5 py-1.5 focus-within:ring-2 focus-within:ring-blue-600 focus-within:bg-white transition">
                 <button type="button" onclick="document.getElementById('chatbot-chips').style.display='flex'" title="Opsi Pertanyaan" class="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 hover:text-blue-600 hover:bg-slate-200/60 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
@@ -162,16 +183,17 @@
                     placeholder="Ketik pesan..."
                     class="w-full bg-transparent text-xs text-slate-800 placeholder-slate-400 focus:outline-none px-1"
                     autocomplete="off"
-                    maxlength="1000"
+                    maxlength="500"
                 />
                 <button
                     id="chatbot-submit-btn"
                     type="submit"
                     class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1e3a8a] text-white shadow-sm transition hover:bg-[#1d4ed8] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 -rotate-45 translate-x-0.5">
+                    <svg id="chatbot-send-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 -rotate-45 translate-x-0.5">
                         <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z" />
                     </svg>
+                    <span id="chatbot-cooldown-text" class="hidden text-[10px] font-bold">3s</span>
                 </button>
             </div>
         </form>
@@ -183,6 +205,139 @@
         let isChatOpen = false;
         let chatHistory = [];
         const CHAT_ENDPOINT = '{{ route('chatbot.send') }}';
+
+        // ==========================================
+        // CONFIG ANTI-SPAM JAVASCRIPT (CLIENT SECURITY SUITE)
+        // ==========================================
+        const ANTI_SPAM = {
+            COOLDOWN_SECONDS: 3,         // Waktu tunggu jeda antar pesan
+            MAX_MESSAGES_PER_MINUTE: 6,  // Batas maksimal pesan dalam 60 detik
+            MIN_LENGTH: 2,               // Minimal panjang karakter bermakna
+            MAX_LENGTH: 500,             // Maksimal panjang karakter
+            DUPLICATE_TIME_WINDOW: 45000 // Jendela pencegahan pesan kembar (45 detik)
+        };
+
+        let isCooldownActive = false;
+        let cooldownTimer = null;
+        let lastSentMessage = '';
+        let lastSentTime = 0;
+        let alertTimeout = null;
+
+        function showSpamAlert(message) {
+            const alertBox = document.getElementById('chatbot-spam-alert');
+            const alertText = document.getElementById('chatbot-spam-text');
+            if (alertBox && alertText) {
+                alertText.innerText = message;
+                alertBox.classList.remove('hidden');
+                if (alertTimeout) clearTimeout(alertTimeout);
+                alertTimeout = setTimeout(() => {
+                    alertBox.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+        window.hideSpamAlert = function () {
+            const alertBox = document.getElementById('chatbot-spam-alert');
+            if (alertBox) alertBox.classList.add('hidden');
+        };
+
+        // Rolling Window Rate Limiter (LocalStorage / SessionStorage)
+        function checkClientRateLimit() {
+            const now = Date.now();
+            let timestamps = [];
+            try {
+                const stored = sessionStorage.getItem('sada_msg_timestamps');
+                timestamps = stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                timestamps = [];
+            }
+
+            // Filter timestamp dalam 60 detik terakhir
+            timestamps = timestamps.filter(t => now - t < 60000);
+
+            if (timestamps.length >= ANTI_SPAM.MAX_MESSAGES_PER_MINUTE) {
+                const oldest = timestamps[0];
+                const waitSeconds = Math.ceil((60000 - (now - oldest)) / 1000);
+                return {
+                    allowed: false,
+                    reason: `Batas pesan tercapai (${ANTI_SPAM.MAX_MESSAGES_PER_MINUTE}/menit). Harap tunggu ${waitSeconds} detik.`
+                };
+            }
+
+            timestamps.push(now);
+            try {
+                sessionStorage.setItem('sada_msg_timestamps', JSON.stringify(timestamps));
+            } catch (e) {}
+
+            return { allowed: true };
+        }
+
+        // Deteksi Spam Huruf/Karakter Berulang atau Keyboard Smashing
+        function validateAntiSpamInput(text) {
+            const trimmed = text.trim();
+
+            if (trimmed.length < ANTI_SPAM.MIN_LENGTH) {
+                return { valid: false, reason: 'Pesan terlalu pendek. Mohon tuliskan pertanyaan yang jelas.' };
+            }
+
+            if (trimmed.length > ANTI_SPAM.MAX_LENGTH) {
+                return { valid: false, reason: `Pesan melebihi batas maksimal (${ANTI_SPAM.MAX_LENGTH} karakter).` };
+            }
+
+            // 1. Deteksi Huruf Berulang Ekstrem (contoh: aaaaaaaa, wooooooooooy, 11111111)
+            const floodPattern = /(.)\1{7,}/i;
+            if (floodPattern.test(trimmed)) {
+                return { valid: false, reason: 'Pesan mengandung karakter berulang yang tidak wajar.' };
+            }
+
+            // 2. Deteksi Spam Duplikat Pesan Persis Sama dalam 45 Detik
+            const now = Date.now();
+            if (trimmed.toLowerCase() === lastSentMessage.toLowerCase() && (now - lastSentTime) < ANTI_SPAM.DUPLICATE_TIME_WINDOW) {
+                const remainingSecs = Math.ceil((ANTI_SPAM.DUPLICATE_TIME_WINDOW - (now - lastSentTime)) / 1000);
+                return { valid: false, reason: `Pertanyaan yang sama baru saja diajukan. Mohon tunggu ${remainingSecs} detik atau tanyakan hal lain.` };
+            }
+
+            // 3. Deteksi Script Injection / XSS Ringan di Frontend
+            if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(trimmed) || /javascript:/i.test(trimmed)) {
+                return { valid: false, reason: 'Karakter atau format input tidak diizinkan.' };
+            }
+
+            return { valid: true };
+        }
+
+        // Mulai Cooldown Visual Countdown pada Tombol Kirim
+        function startCooldown(seconds) {
+            isCooldownActive = true;
+            let remaining = seconds;
+
+            const submitBtn = document.getElementById('chatbot-submit-btn');
+            const sendIcon = document.getElementById('chatbot-send-icon');
+            const cdText = document.getElementById('chatbot-cooldown-text');
+            const inputField = document.getElementById('chatbot-input');
+
+            if (submitBtn) submitBtn.disabled = true;
+            if (sendIcon) sendIcon.classList.add('hidden');
+            if (cdText) {
+                cdText.classList.remove('hidden');
+                cdText.innerText = `${remaining}s`;
+            }
+
+            if (cooldownTimer) clearInterval(cooldownTimer);
+
+            cooldownTimer = setInterval(() => {
+                remaining -= 1;
+                if (remaining <= 0) {
+                    clearInterval(cooldownTimer);
+                    isCooldownActive = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                    if (sendIcon) sendIcon.classList.remove('hidden');
+                    if (cdText) cdText.classList.add('hidden');
+                    if (inputField) inputField.focus();
+                } else {
+                    if (cdText) cdText.innerText = `${remaining}s`;
+                }
+            }, 1000);
+        }
 
         function getCurrentTimeString() {
             const now = new Date();
@@ -233,6 +388,10 @@
 
         window.resetChatHistory = function () {
             chatHistory = [];
+            lastSentMessage = '';
+            lastSentTime = 0;
+            hideSpamAlert();
+
             const container = document.getElementById('chatbot-messages');
             if (!container) return;
 
@@ -275,13 +434,46 @@
         };
 
         async function submitMessage(message) {
+            // 1. Check Cooldown
+            if (isCooldownActive) {
+                showSpamAlert('Mohon tunggu countdown selesai sebelum mengirim pesan lagi.');
+                return;
+            }
+
+            // 2. Check Honeypot Trap (Automated Spam Bots)
+            const honeypot = document.getElementById('sada_security_code');
+            if (honeypot && honeypot.value.trim() !== '') {
+                console.warn('Bot trap triggered.');
+                showSpamAlert('Permintaan tidak valid.');
+                return;
+            }
+
+            // 3. Check Input Sanity & Gibberish / Duplicates
+            const validation = validateAntiSpamInput(message);
+            if (!validation.valid) {
+                showSpamAlert(validation.reason);
+                return;
+            }
+
+            // 4. Check Client-Side Rolling Rate Limit
+            const rateLimit = checkClientRateLimit();
+            if (!rateLimit.allowed) {
+                showSpamAlert(rateLimit.reason);
+                return;
+            }
+
+            hideSpamAlert();
+
             const input = document.getElementById('chatbot-input');
-            const submitBtn = document.getElementById('chatbot-submit-btn');
             const typingIndicator = document.getElementById('chatbot-typing');
             const chips = document.getElementById('chatbot-chips');
 
             if (input) input.value = '';
             if (chips) chips.style.display = 'none';
+
+            // Catat pesan terakhir & timestamp
+            lastSentMessage = message;
+            lastSentTime = Date.now();
 
             // Append User Bubble
             appendUserMessage(message);
@@ -289,7 +481,9 @@
             // Add to client history
             chatHistory.push({ role: 'user', content: message });
 
-            if (submitBtn) submitBtn.disabled = true;
+            // Mulai Cooldown Timer JavaScript
+            startCooldown(ANTI_SPAM.COOLDOWN_SECONDS);
+
             if (typingIndicator) typingIndicator.classList.remove('hidden');
             scrollChatToBottom();
 
@@ -305,6 +499,7 @@
                     body: JSON.stringify({
                         message: message,
                         history: chatHistory.slice(-6),
+                        sada_security_code: honeypot ? honeypot.value : ''
                     }),
                 });
 
@@ -317,12 +512,14 @@
                 } else {
                     const fallbackMsg = data.message || 'Maaf, terjadi kendala saat memproses jawaban.';
                     appendBotMessage(`⚠️ ${fallbackMsg}`);
+                    if (response.status === 429) {
+                        showSpamAlert('Aktivitas Anda terlalu cepat. Silakan tunggu sebentar.');
+                    }
                 }
             } catch (err) {
                 console.error('Chatbot error:', err);
                 appendBotMessage('⚠️ Maaf, koneksi ke server sedang terganggu.');
             } finally {
-                if (submitBtn) submitBtn.disabled = false;
                 if (typingIndicator) typingIndicator.classList.add('hidden');
                 scrollChatToBottom();
             }
