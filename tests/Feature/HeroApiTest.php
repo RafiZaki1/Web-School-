@@ -24,13 +24,13 @@ class HeroApiTest extends TestCase
     {
         Hero::create([
             'title' => 'Hero 1',
-            'school_name' => 'JHIC School',
+            'school_name' => 'SMKN 2 Mojokerto',
             'is_active' => true,
             'sort_order' => 1,
         ]);
         Hero::create([
             'title' => 'Hero 2',
-            'school_name' => 'JHIC School',
+            'school_name' => 'SMKN 2 Mojokerto',
             'is_active' => false,
             'sort_order' => 2,
         ]);
@@ -51,7 +51,7 @@ class HeroApiTest extends TestCase
 
         $payload = [
             'title' => 'Welcome to JHIC',
-            'school_name' => 'Jakarta Honors International College',
+            'school_name' => 'SMKN 2 Mojokerto',
             'description' => 'A premier school for future leaders.',
             'button_text' => 'Enroll Now',
             'button_url' => 'https://jhic.sch.id/enroll',
@@ -68,7 +68,7 @@ class HeroApiTest extends TestCase
                 'message' => 'Hero created successfully',
                 'data' => [
                     'title' => 'Welcome to JHIC',
-                    'school_name' => 'Jakarta Honors International College',
+                    'school_name' => 'SMKN 2 Mojokerto',
                     'is_active' => true,
                 ],
             ]);
@@ -86,7 +86,7 @@ class HeroApiTest extends TestCase
     {
         $hero = Hero::create([
             'title' => 'Hero Detail',
-            'school_name' => 'JHIC School',
+            'school_name' => 'SMKN 2 Mojokerto  ',
             'is_active' => true,
         ]);
 

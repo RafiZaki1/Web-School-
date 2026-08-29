@@ -598,11 +598,197 @@
                 </div>
             </div>
         </section>
-        </main>
+        </section>
+        {{-- ^ menutup section id=profil yang sebelumnya tidak tertutup --}}
 
+        {{-- ============ MITRA INDUSTRI KAMI ============ --}}
+        {{-- NOTE: belum ada aset logo mitra, jadi masih placeholder kosong.
+             Ganti isi <div id="mitra-logos"> dengan <img> logo asli. --}}
+        <section id="mitra" class="border-t border-slate-200/80 bg-white py-16 px-5 lg:px-8">
+            <div class="mx-auto max-w-5xl text-center">
+                <span class="inline-block rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
+                    Kemitraan
+                </span>
+                <h2 class="mt-3 text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                    Mitra Industri Kami
+                </h2>
+
+                <div id="mitra-logos" class="mt-8 flex h-32 items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/40 text-xs font-bold uppercase tracking-wide text-blue-300">
+                    Logo Mitra Industri (DUDI)
+                </div>
+            </div>
+        </section>
+
+        {{-- ============ EKSTRAKURIKULER ============ --}}
+        {{-- NOTE: foto/video ekskul masih placeholder, ganti sesuai aset asli.
+             Klik nama ekskul di kiri untuk ganti foto/label di kanan (Alpine.js). --}}
+        <section id="ekstrakurikuler" class="border-t border-slate-200/80 bg-[#eef6ff] py-16 px-5 lg:px-8">
+            <div class="mx-auto max-w-6xl">
+                <div class="text-center max-w-2xl mx-auto">
+                    <span class="inline-block rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
+                        Kesiswaan
+                    </span>
+                    <h2 class="mt-3 text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                        Ekstrakurikuler
+                    </h2>
+                    <p class="mt-2 text-sm text-slate-600">
+                        Wadah pengembangan minat dan bakat siswa di luar kegiatan akademik.
+                    </p>
+                </div>
+
+                @php
+                $ekstrakurikuler = ['Paskibra', 'Futsal', 'Tari', 'Basket', 'Pramuka', 'PMR', 'Pencak Silat', 'English Club'];
+                @endphp
+                <div class="mt-10 grid gap-5 lg:grid-cols-3">
+                    {{-- List / tab kiri --}}
+                    <div id="ekskul-tabs" class="rounded-2xl bg-white p-3 shadow-sm lg:col-span-1">
+                        @foreach ($ekstrakurikuler as $index => $nama)
+                        <button
+                            type="button"
+                            onclick="pilihEkskul(this, '{{ $nama }}')"
+                            class="ekskul-tab flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-bold transition {{ $index === 0 ? 'bg-blue-600 text-white shadow-md is-active' : 'text-slate-700 hover:bg-slate-100' }}">
+                            <span class="h-2 w-2 shrink-0 rounded-full {{ $index === 0 ? 'bg-white' : 'bg-blue-300' }}"></span>
+                            <span>{{ $nama }}</span>
+                        </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Preview foto/video kanan --}}
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg lg:col-span-2">
+                        <div class="flex h-64 items-center justify-center bg-slate-800 sm:h-80">
+                            <span class="text-xs font-bold uppercase tracking-wide text-white/40">Foto / Video Kegiatan</span>
+                        </div>
+                        <span id="ekskul-label" class="absolute left-4 top-4 rounded-lg bg-black/40 px-3 py-1.5 text-sm font-extrabold text-white backdrop-blur-sm">{{ $ekstrakurikuler[0] }}</span>
+                        <button type="button" class="absolute inset-0 flex items-center justify-center" aria-label="Putar video">
+                            <span class="flex h-16 w-16 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition hover:scale-110 hover:bg-white/40">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-7 w-7 translate-x-0.5">
+                                    <path fill-rule="evenodd" d="M4.5 3.5A1.5 1.5 0 0 1 6.837 2.19l9.5 5.5a1.5 1.5 0 0 1 0 2.62l-9.5 5.5A1.5 1.5 0 0 1 4.5 14.5v-11Z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Banner foto kegiatan (belum ada asetnya, placeholder) --}}
+                <div class="mt-8 flex h-40 items-center justify-center rounded-2xl bg-blue-600 text-xs font-bold uppercase tracking-wide text-white/60 sm:h-56">
+                    Foto Banner Kegiatan Sekolah
+                </div>
+            </div>
+        </section>
+
+        {{-- ============ PRESTASI & KEJUARAAN ============ --}}
+        {{-- NOTE: foto & tanggal masih placeholder, sesuaikan dengan data prestasi asli. --}}
+        <section id="prestasi" class="border-t border-slate-200/80 bg-white py-16 px-5 lg:px-8">
+            <div class="mx-auto max-w-6xl">
+                <div class="grid gap-8 lg:grid-cols-2 lg:items-start">
+                    {{-- Foto utama --}}
+                    <div class="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex h-56 items-center justify-center bg-slate-200 text-xs font-bold uppercase tracking-wide text-slate-400 sm:h-72">
+                            Foto Prestasi
+                        </div>
+                        <div class="bg-white p-4">
+                            <span class="inline-block rounded-full bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700">
+                                Prestasi
+                            </span>
+                            <h3 class="mt-2 text-sm font-bold leading-snug text-slate-900">
+                                Lomba Menulis Surat untuk Gubernur Memperingati Hari Pendidikan
+                            </h3>
+                        </div>
+                    </div>
+
+                    {{-- Daftar prestasi lain --}}
+                    <div class="space-y-1">
+                        <span class="inline-block rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-amber-700">
+                            Kejuaraan
+                        </span>
+                        <h2 class="mt-2 text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                            Prestasi &amp; Kejuaraan
+                        </h2>
+
+                        @php
+                        $daftarPrestasi = [
+                        ['title' => 'Duta Koperasi', 'meta' => 'Tingkat Kota Mojokerto'],
+                        ['title' => 'Turnamen Futsal Tumen Cup 2026', 'meta' => 'Tingkat Kota Mojokerto'],
+                        ['title' => 'Kejuaraan Provinsi (Kejurprov) Dayung 2026', 'meta' => 'Tingkat Provinsi Jawa Timur'],
+                        ['title' => 'Graphic Design Tournament', 'meta' => 'Tingkat Nasional'],
+                        ];
+                        @endphp
+                        <div class="mt-6 divide-y divide-slate-100">
+                            @foreach ($daftarPrestasi as $prestasi)
+                            <div class="flex items-start gap-4 py-4">
+                                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4.5 w-4.5">
+                                        <path fill-rule="evenodd" d="M10 1c-1.828 0-3.623.149-5.371.435a.75.75 0 0 0-.629.74v.387c-.827.157-1.642.345-2.445.564a.75.75 0 0 0-.552.698 5.048 5.048 0 0 0 4.44 5.147A6.484 6.484 0 0 0 8.5 10.607V12.5H6a.75.75 0 0 0 0 1.5h1.5v1.5H6.75a.75.75 0 0 0 0 1.5h6.5a.75.75 0 0 0 0-1.5H12.5V14H14a.75.75 0 0 0 0-1.5h-2.5v-1.893a6.484 6.484 0 0 0 3.057-1.636 5.048 5.048 0 0 0 4.44-5.147.75.75 0 0 0-.552-.698A31.66 31.66 0 0 0 16 2.562v-.387a.75.75 0 0 0-.629-.74A33.169 33.169 0 0 0 10 1Z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                                <div>
+                                    <p class="text-sm font-bold leading-snug text-slate-900">{{ $prestasi['title'] }}</p>
+                                    <p class="mt-0.5 text-xs text-slate-500">{{ $prestasi['meta'] }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- ============ BERITA TERBARU ============ --}}
+        {{-- NOTE: foto & tanggal artikel masih placeholder, sesuaikan dengan berita asli. --}}
+        <section id="informasi" class="border-t border-slate-200/80 bg-slate-50/60 py-16 px-5 lg:px-8">
+            <div class="mx-auto max-w-5xl">
+                <div class="text-center max-w-2xl mx-auto">
+                    <span class="inline-block rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
+                        Informasi
+                    </span>
+                    <h2 class="mt-3 text-2xl font-extrabold text-slate-900 sm:text-3xl">
+                        Berita Terbaru
+                    </h2>
+                </div>
+
+                {{-- Filter tag (statis, belum ada logika filter) --}}
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-2">
+                    @foreach (['Semua', 'Informasi', 'Agenda', 'Pengumuman', 'Kejuaraan'] as $index => $tag)
+                    <span class="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wide transition {{ $index === 0 ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200' }}">
+                        {{ $tag }}
+                    </span>
+                    @endforeach
+                </div>
+
+                @php
+                $beritaTerbaru = [
+                [
+                'tag' => 'Kejuaraan',
+                'title' => 'Siswa Jurusan Pengembangan Gim SMKN 2 Kota Mojokerto Ciptakan Game Edukasi AR untuk Kenalkan Batik Malang kepada Anak-Anak',
+                ],
+                [
+                'tag' => 'Informasi',
+                'title' => 'Belajar Tanpa Batas dengan Hadirnya WiFi Gratis di SMK Negeri 2 Kota Mojokerto',
+                ],
+                ];
+                @endphp
+                <div class="mt-8 grid gap-6 sm:grid-cols-2">
+                    @foreach ($beritaTerbaru as $berita)
+                    <div class="group overflow-hidden rounded-2xl bg-blue-600 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                        <div class="flex h-40 items-center justify-center bg-blue-700/60 text-xs font-bold uppercase tracking-wide text-white/50">
+                            Foto Berita
+                        </div>
+                        <div class="p-5">
+                            <span class="inline-block rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                                {{ $berita['tag'] }}
+                            </span>
+                            <h3 class="mt-3 text-sm font-bold leading-snug text-white">
+                                {{ $berita['title'] }}
+                            </h3>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
 
         {{-- ============ FOOTER (FULL WIDTH SEPERTI NAVBAR & TEKS WARNA PUTIH) ============ --}}
-        <footer id="kontak" class="bg-gradient-to-b from-[#0b3344] via-[#092937] to-[#061e29] text-white">
+        <footer id="kontak" class="bg-gradient-to-b from-[#05529E] via-[#03315F] to-[#021D37] text-white">
             <div class="mx-auto w-full max-w-[1280px] px-6 lg:px-8 pt-14 pb-8 flex flex-col justify-between">
                 
                 {{-- Top/Main Footer Columns (Stretched Full Width Across Grid) --}}
@@ -644,6 +830,30 @@
                                 </a>
                             </li>
                             <li>
+                                <a href="#mitra" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
+                                    <span>Mitra Industri</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#ekstrakurikuler" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
+                                    <span>Ekstrakurikuler</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#prestasi" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
+                                    <span>Prestasi</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#informasi" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
+                                    <span>Berita</span>
+                                </a>
+                            </li>
+                            <li>
                                 <a href="#ppdb" class="inline-flex items-center gap-2 text-white hover:text-white/80 transition group">
                                     <span class="h-1.5 w-1.5 rounded-full bg-white group-hover:scale-125 transition"></span>
                                     <span>PPDB</span>
@@ -660,19 +870,19 @@
                         </div>
                         <div class="flex items-center gap-3 text-white">
                             {{-- Facebook --}}
-                            <a href="https://facebook.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#0b3344] transition-all hover:scale-110 shadow-sm" title="Facebook SMKN 2 Kota Mojokerto">
+                            <a href="https://facebook.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#05529E] transition-all hover:scale-110 shadow-sm" title="Facebook SMKN 2 Kota Mojokerto">
                                 <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.7 5H18V0h-3.808C10.597 0 9 1.583 9 4.615V8z" />
                                 </svg>
                             </a>
                             {{-- Instagram --}}
-                            <a href="https://www.instagram.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#0b3344] transition-all hover:scale-110 shadow-sm" title="Instagram @smkn2kotamojokerto">
+                            <a href="https://www.instagram.com/smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#05529E] transition-all hover:scale-110 shadow-sm" title="Instagram @smkn2kotamojokerto">
                                 <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
                                 </svg>
                             </a>
                             {{-- TikTok --}}
-                            <a href="https://tiktok.com/@smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#0b3344] transition-all hover:scale-110 shadow-sm" title="TikTok SMKN 2 Kota Mojokerto">
+                            <a href="https://tiktok.com/@smkn2kotamojokerto" target="_blank" rel="noopener noreferrer" class="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white hover:text-[#05529E] transition-all hover:scale-110 shadow-sm" title="TikTok SMKN 2 Kota Mojokerto">
                                 <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
                                     <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.24 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
                                 </svg>
@@ -686,7 +896,7 @@
                             <h4 class="text-xs font-black uppercase tracking-widest text-white">LOKASI &amp; ALAMAT</h4>
                             <div class="mt-1.5 h-0.5 w-7 bg-white/80 rounded-full"></div>
                         </div>
-                        <div class="overflow-hidden rounded-2xl border border-white/15 bg-[#051c27] shadow-xl">
+                        <div class="overflow-hidden rounded-2xl border border-white/15 bg-[#03315F] shadow-xl">
                             {{-- Map Embed / View --}}
                             <div class="relative h-28 w-full bg-slate-200">
                                 <iframe
@@ -700,7 +910,7 @@
                                     class="h-full w-full object-cover"></iframe>
                             </div>
                             {{-- Map Bottom Bar --}}
-                            <div class="flex items-start gap-2.5 p-3 bg-[#061d28]">
+                            <div class="flex items-start gap-2.5 p-3 bg-[#021D37]">
                                 <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/20 text-white shadow-md mt-0.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5">
                                         <path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.77 11.77 0 0 0 1.039.573l.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" />
@@ -747,6 +957,30 @@
         <x-chatbot :school-name="$schoolName" />
 
         <script>
+            // Tab Ekstrakurikuler: ganti label preview foto/video saat tab diklik
+            function pilihEkskul(btn, nama) {
+                document.querySelectorAll('#ekskul-tabs .ekskul-tab').forEach(function (tab) {
+                    tab.classList.remove('bg-blue-600', 'text-white', 'shadow-md', 'is-active');
+                    tab.classList.add('text-slate-700', 'hover:bg-slate-100');
+                    const dot = tab.querySelector('span');
+                    if (dot) {
+                        dot.classList.remove('bg-white');
+                        dot.classList.add('bg-blue-300');
+                    }
+                });
+                btn.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'is-active');
+                btn.classList.remove('text-slate-700', 'hover:bg-slate-100');
+                const dot = btn.querySelector('span');
+                if (dot) {
+                    dot.classList.add('bg-white');
+                    dot.classList.remove('bg-blue-300');
+                }
+                const label = document.getElementById('ekskul-label');
+                if (label) {
+                    label.textContent = nama;
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function() {
                 const header = document.getElementById('main-header');
                 if (header) {

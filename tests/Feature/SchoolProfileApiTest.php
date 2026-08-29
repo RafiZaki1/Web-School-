@@ -48,7 +48,7 @@ class SchoolProfileApiTest extends TestCase
         $bg = UploadedFile::fake()->image('bg.webp');
 
         $payload = [
-            'school_name' => 'Jakarta Honors International College',
+            'school_name' => 'SMKN 2 Mojokerto',
             'principal_name' => 'Dr. John Doe, M.Ed',
             'principal_position' => 'Kepala Sekolah',
             'welcome_message' => 'Selamat datang di website resmi JHIC.',
@@ -65,7 +65,7 @@ class SchoolProfileApiTest extends TestCase
                 'success' => true,
                 'message' => 'School profile updated successfully',
                 'data' => [
-                    'school_name' => 'Jakarta Honors International College',
+                    'school_name' => 'SMKN 2 Mojokerto',
                     'established_year' => 2014,
                 ],
             ]);
