@@ -99,8 +99,8 @@
         {{-- Foto Background Sekolah --}}
         <img src="{{ $heroBg }}" alt="{{ $schoolName }}" class="absolute inset-0 h-full w-full object-cover object-center opacity-100">
         
-        {{-- Gradient Overlay 3-Stop Vertikal Transparan (0% #05529E, 55% #0885D1, 100% #42B8F2) --}}
-        <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, rgba(5, 82, 158, 0.48) 0%, rgba(8, 133, 209, 0.38) 55%, rgba(66, 184, 242, 0.30) 100%);"></div>
+        {{-- Gradient Overlay 3-Stop Vertikal Transparan Lebih Gelap & Berkontras Tinggi --}}
+        <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, rgba(2, 33, 64, 0.82) 0%, rgba(5, 82, 158, 0.72) 45%, rgba(8, 110, 180, 0.60) 100%);"></div>
 
         {{-- Center Hero Content --}}
         <div class="relative mx-auto mt-4 mb-2 max-w-[1280px] w-full px-6 text-center">
@@ -493,112 +493,184 @@
             @endforeach
         </div>
         {{-- ============ PROGRAM KEAHLIAN / JURUSAN ============ --}}
-        <section id="jurusan" class="border-t border-slate-200/80 bg-white py-16 px-5 lg:px-8">
+        <section id="jurusan" class="border-t border-slate-200/80 bg-[#f8fafc] py-16 px-5 lg:px-8"
+            x-data="{
+                currentIndex: 0,
+                total: 7,
+                get visibleCount() {
+                    if (window.innerWidth >= 1024) return 3;
+                    if (window.innerWidth >= 640) return 2;
+                    return 1;
+                },
+                get maxIndex() {
+                    return Math.max(0, this.total - this.visibleCount);
+                },
+                next() {
+                    if (this.currentIndex < this.maxIndex) {
+                        this.currentIndex++;
+                    } else {
+                        this.currentIndex = 0;
+                    }
+                },
+                prev() {
+                    if (this.currentIndex > 0) {
+                        this.currentIndex--;
+                    } else {
+                        this.currentIndex = this.maxIndex;
+                    }
+                }
+            }">
             <div class="mx-auto max-w-6xl">
-                <div class="text-center max-w-2xl mx-auto">
-                    <span class="inline-block rounded-full bg-blue-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
-                        Program Keahlian
-                    </span>
-                    <h2 class="mt-3 text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                        Jurusan Unggulan SMKN 2 Kota Mojokerto
+                {{-- Header matching mockup --}}
+                <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#05529E] tracking-wide uppercase">
+                        JURUSAN
                     </h2>
-                    <p class="mt-2 text-sm text-slate-600">
-                        Kurikulum berbasis industri dengan fasilitas praktik modern untuk mencetak lulusan yang kompeten dan siap kerja.
+                    <p class="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        Kisah sukses para alumni yang telah berkiprah di dunia industri dan perguruan tinggi ternama.
                     </p>
                 </div>
 
-                <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    {{-- 1. RPL --}}
-                    <div id="jurusan-rpl" class="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-sky-400 hover:bg-white hover:shadow-xl scroll-mt-24">
-                        <div>
-                            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-700 font-extrabold text-sm shadow-inner group-hover:scale-110 transition">
-                                RPL
-                            </span>
-                            <h3 class="mt-4 font-bold text-slate-900 text-base">Rekayasa Perangkat Lunak</h3>
-                            <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                                Mempelajari pemrograman web, mobile apps, basis data, algoritma, dan rekayasa perangkat lunak modern.
-                            </p>
-                            <div class="mt-4 space-y-1 text-[11px] text-slate-500">
-                                <p class="font-semibold text-slate-700">Prospek Karir:</p>
-                                <p>• Web & Mobile Developer</p>
-                                <p>• Software Engineer & IT Support</p>
-                                <p>• UI/UX Designer & Database Admin</p>
+                {{-- Carousel Slider Container --}}
+                <div class="relative overflow-hidden pb-4">
+                    <div 
+                        class="flex transition-transform duration-500 ease-out gap-6"
+                        :style="`transform: translateX(calc(-${currentIndex} * (100% + 1.5rem) / ${visibleCount}));`"
+                    >
+                        {{-- 1. APHP --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div id="jurusan-aphp" class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('aphp.jpeg') }}" alt="Jurusan APHP SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">APHP</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Agribisnis Pengolahan Hasil Pertanian</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Agribisnis Pengolahan Hasil Pertanian (APHP) membekali siswa dengan keterampilan mengolah hasil pertanian menjadi produk berkualitas, dari proses produksi, pengemasan, hingga pemasaran.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-6 pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-sky-700">Fasilitas: Lab Komputer RPL</span>
-                            <span class="text-xs font-semibold text-sky-600 group-hover:translate-x-1 transition">→</span>
-                        </div>
-                    </div>
 
-                    {{-- 2. DKV --}}
-                    <div id="jurusan-dkv" class="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-400 hover:bg-white hover:shadow-xl scroll-mt-24">
-                        <div>
-                            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 font-extrabold text-sm shadow-inner group-hover:scale-110 transition">
-                                DKV
-                            </span>
-                            <h3 class="mt-4 font-bold text-slate-900 text-base">Desain Komunikasi Visual</h3>
-                            <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                                Fokus pada desain grafis, ilustrasi digital, videografi, fotografi studio, animasi, dan branding kreatif.
-                            </p>
-                            <div class="mt-4 space-y-1 text-[11px] text-slate-500">
-                                <p class="font-semibold text-slate-700">Prospek Karir:</p>
-                                <p>• Graphic Designer & Illustrator</p>
-                                <p>• Video Editor & Content Creator</p>
-                                <p>• Fotografer & Motion Designer</p>
+                        {{-- 2. LPS --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div id="jurusan-lps" class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('lps.jpeg') }}" alt="Jurusan LPS SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">LPS</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Layanan Perbankan Syariah</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Layanan Perbankan Syariah (LPS) membekali siswa dengan keterampilan pelayanan dan administrasi perbankan berdasarkan prinsip syariah sebagai persiapan memasuki dunia kerja.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-6 pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-emerald-700">Fasilitas: Studio Foto & DKV</span>
-                            <span class="text-xs font-semibold text-emerald-600 group-hover:translate-x-1 transition">→</span>
-                        </div>
-                    </div>
 
-                    {{-- 3. APHP --}}
-                    <div id="jurusan-aphp" class="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-amber-400 hover:bg-white hover:shadow-xl scroll-mt-24">
-                        <div>
-                            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-700 font-extrabold text-sm shadow-inner group-hover:scale-110 transition">
-                                APHP
-                            </span>
-                            <h3 class="mt-4 font-bold text-slate-900 text-base">Agribisnis Pengolahan Hasil Pertanian</h3>
-                            <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                                Mengolah komoditas hasil tani menjadi produk pangan bernilai jual tinggi dengan standar uji mutu (HACCP).
-                            </p>
-                            <div class="mt-4 space-y-1 text-[11px] text-slate-500">
-                                <p class="font-semibold text-slate-700">Prospek Karir:</p>
-                                <p>• Quality Control (QC) Pangan</p>
-                                <p>• Teknisi Pengolahan Hasil Panen</p>
-                                <p>• Wirausaha Agribisnis Pangan Olahan</p>
+                        {{-- 3. RPL --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div id="jurusan-rpl" class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('rpl.jpeg') }}" alt="Jurusan RPL SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">RPL</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Rekayasa Perangkat Lunak</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Rekayasa Perangkat Lunak (RPL) membekali siswa dengan keahlian komputasi, pemrograman aplikasi web dan mobile, perancangan database, dan rekayasa software modern.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-6 pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-amber-700">Fasilitas: Lab Pengolahan Pangan</span>
-                            <span class="text-xs font-semibold text-amber-600 group-hover:translate-x-1 transition">→</span>
-                        </div>
-                    </div>
 
-                    {{-- 4. Tata Boga --}}
-                    <div id="jurusan-boga" class="group relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-orange-400 hover:bg-white hover:shadow-xl scroll-mt-24">
-                        <div>
-                            <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-700 font-extrabold text-sm shadow-inner group-hover:scale-110 transition">
-                                Boga
-                            </span>
-                            <h3 class="mt-4 font-bold text-slate-900 text-base">Tata Boga (Kuliner)</h3>
-                            <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                                Menguasai seni memasak masakan nusantara & internasional, pastry & bakery, serta manajemen restoran & tata hidang.
-                            </p>
-                            <div class="mt-4 space-y-1 text-[11px] text-slate-500">
-                                <p class="font-semibold text-slate-700">Prospek Karir:</p>
-                                <p>• Chef / Cook Hotel & Restoran</p>
-                                <p>• Pastry & Bakery Baker</p>
-                                <p>• Barista & Pengusaha Kuliner</p>
+                        {{-- 4. DKV --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div id="jurusan-dkv" class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('dkv.jpeg') }}" alt="Jurusan DKV SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">DKV</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Desain Komunikasi Visual</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Desain Komunikasi Visual (DKV) mengembangkan kreativitas siswa dalam desain grafis, ilustrasi digital, videografi, fotografi studio, animasi, dan perancangan identitas visual kreatif.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div class="mt-6 pt-4 border-t border-slate-200/60 flex items-center justify-between">
-                            <span class="text-[11px] font-bold text-orange-700">Fasilitas: Kitchen Lab & Resto</span>
-                            <span class="text-xs font-semibold text-orange-600 group-hover:translate-x-1 transition">→</span>
+
+                        {{-- 5. Tata Boga (Kuliner) --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div id="jurusan-boga" class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('kuliner.jpeg') }}" alt="Jurusan Kuliner SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">Tata Boga</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Kuliner & Tata Hidang</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Tata Boga (Kuliner) membekali siswa dengan keahlian seni memasak masakan nusantara dan kontinental, pastry & bakery, table setup, hingga manajemen operasional restoran dan kuliner.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 6. APHP (Loop Slot 1) --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('aphp.jpeg') }}" alt="Jurusan APHP SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">APHP</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Agribisnis Pengolahan Hasil Pertanian</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Agribisnis Pengolahan Hasil Pertanian (APHP) membekali siswa dengan keterampilan mengolah hasil pertanian menjadi produk berkualitas, dari proses produksi, pengemasan, hingga pemasaran.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 7. LPS (Loop Slot 2) --}}
+                        <div class="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] shrink-0 flex">
+                            <div class="w-full flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
+                                <div>
+                                    <div class="rounded-2xl overflow-hidden mb-5 aspect-[3/3.8] bg-slate-50 border border-slate-100 shadow-inner">
+                                        <img src="{{ asset('lps.jpeg') }}" alt="Jurusan LPS SMKN 2 Mojokerto" class="w-full h-full object-cover" />
+                                    </div>
+                                    <h3 class="text-xl font-extrabold text-slate-900">LPS</h3>
+                                    <p class="text-xs font-bold text-sky-600 mt-1">Layanan Perbankan Syariah</p>
+                                    <p class="mt-3 text-xs leading-relaxed text-slate-600 font-normal italic">
+                                        Layanan Perbankan Syariah (LPS) membekali siswa dengan keterampilan pelayanan dan administrasi perbankan berdasarkan prinsip syariah sebagai persiapan memasuki dunia kerja.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                {{-- Bottom Navigation Arrows matching mockup --}}
+                <div class="mt-8 flex items-center justify-center gap-3">
+                    <button 
+                        type="button"
+                        @click="prev()"
+                        aria-label="Jurusan Sebelumnya"
+                        class="h-10 w-10 rounded-full border border-slate-200 bg-white text-slate-700 flex items-center justify-center hover:bg-slate-100 transition shadow-2xs cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <button 
+                        type="button"
+                        @click="next()"
+                        aria-label="Jurusan Berikutnya"
+                        class="h-10 w-10 rounded-full bg-[#05529E] text-white flex items-center justify-center hover:bg-[#0766c6] transition shadow-sm cursor-pointer">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </section>

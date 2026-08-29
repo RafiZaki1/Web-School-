@@ -67,7 +67,7 @@
                     <h3 class="text-sm font-black tracking-tight leading-none" style="color: #ffffff !important;">SADA Roomchat</h3>
                     <p class="mt-1 flex items-center gap-1.5 text-[11px] font-bold" style="color: #6ee7b7 !important;">
                         <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        3 online
+                        Online
                     </p>
                 </div>
             </div>
@@ -113,7 +113,7 @@
                 <div class="pl-9 text-[10px] text-slate-400" id="bot-init-time">05:58 PM</div>
             </div>
 
-            {{-- Quick Chips --}}
+            {{-- Quick Chips (Pertanyaan Template Resmi yang Disediakan) --}}
             <div id="chatbot-chips" class="pt-1 pl-8 flex flex-wrap gap-1.5">
                 <button type="button" onclick="sendQuickPrompt('Apa saja jurusan di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
                     🎓 Jurusan SMKN 2
@@ -121,11 +121,20 @@
                 <button type="button" onclick="sendQuickPrompt('Bagaimana informasi PPDB SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
                     📋 Info PPDB
                 </button>
+                <button type="button" onclick="sendQuickPrompt('Fasilitas apa saja di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                    🏫 Fasilitas & Lab
+                </button>
+                <button type="button" onclick="sendQuickPrompt('Bagaimana cara melihat denah interaktif sekolah di web ini?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                    🗺️ Denah Interaktif
+                </button>
+                <button type="button" onclick="sendQuickPrompt('Apa saja ekstrakurikuler dan prestasi di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                    🏆 Ekskul & Prestasi
+                </button>
                 <button type="button" onclick="sendQuickPrompt('Apa visi dan misi SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
                     🎯 Visi & Misi
                 </button>
-                <button type="button" onclick="sendQuickPrompt('Fasilitas apa saja di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
-                    🏫 Fasilitas
+                <button type="button" onclick="sendQuickPrompt('Di mana lokasi dan kontak resmi SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                    📍 Lokasi & Kontak
                 </button>
             </div>
         </div>
@@ -206,17 +215,19 @@
     (function () {
         let isChatOpen = false;
         let chatHistory = [];
+        let isProcessing = false;
         const CHAT_ENDPOINT = '{{ route('chatbot.send') }}';
 
         // ==========================================
-        // CONFIG ANTI-SPAM JAVASCRIPT (CLIENT SECURITY SUITE)
+        // CONFIG ANTI-SPAM JAVASCRIPT KETAT (STRICT SUITE)
         // ==========================================
         const ANTI_SPAM = {
-            COOLDOWN_SECONDS: 3,         // Waktu tunggu jeda antar pesan
-            MAX_MESSAGES_PER_MINUTE: 6,  // Batas maksimal pesan dalam 60 detik
-            MIN_LENGTH: 2,               // Minimal panjang karakter bermakna
-            MAX_LENGTH: 500,             // Maksimal panjang karakter
-            DUPLICATE_TIME_WINDOW: 45000 // Jendela pencegahan pesan kembar (45 detik)
+            COOLDOWN_SECONDS: 4,         // Jeda waktu wajib antar pesan (4 detik)
+            MAX_MESSAGES_PER_MINUTE: 4,  // Maksimal 4 pesan per menit
+            MAX_MESSAGES_PER_SESSION: 25,// Maksimal 25 pesan per sesi 15 menit
+            MIN_LENGTH: 2,               // Minimal panjang pesan
+            MAX_LENGTH: 350,             // Maksimal panjang pesan
+            DUPLICATE_TIME_WINDOW: 45000 // Blokir pesan sama selama 45 detik
         };
 
         let isCooldownActive = false;
@@ -225,12 +236,23 @@
         let lastSentTime = 0;
         let alertTimeout = null;
 
+        // Daftar kata toksik untuk dicegah instan di browser
+        const CLIENT_TOXIC_WORDS = [
+            'anjing', 'babi', 'bangsat', 'kontol', 'memek', 'jembut', 'tolol', 'goblok',
+            'bajingan', 'pantek', 'kampret', 'asu', 'bgst', 'idiot', 'lonte', 'ngentot'
+        ];
+
         function showSpamAlert(message) {
             const alertBox = document.getElementById('chatbot-spam-alert');
             const alertText = document.getElementById('chatbot-spam-text');
             if (alertBox && alertText) {
                 alertText.innerText = message;
                 alertBox.classList.remove('hidden');
+                
+                // Efek visual getar halus jika spam berulang
+                alertBox.classList.add('animate-pulse');
+                setTimeout(() => alertBox.classList.remove('animate-pulse'), 500);
+
                 if (alertTimeout) clearTimeout(alertTimeout);
                 alertTimeout = setTimeout(() => {
                     alertBox.classList.add('hidden');
@@ -243,7 +265,7 @@
             if (alertBox) alertBox.classList.add('hidden');
         };
 
-        // Rolling Window Rate Limiter (LocalStorage / SessionStorage)
+        // Rolling Window Rate Limiter (SessionStorage)
         function checkClientRateLimit() {
             const now = Date.now();
             let timestamps = [];
@@ -254,11 +276,10 @@
                 timestamps = [];
             }
 
-            // Filter timestamp dalam 60 detik terakhir
-            timestamps = timestamps.filter(t => now - t < 60000);
-
-            if (timestamps.length >= ANTI_SPAM.MAX_MESSAGES_PER_MINUTE) {
-                const oldest = timestamps[0];
+            // 1. Cek batas per 60 detik (Max 4 pesan/menit)
+            const recent1Min = timestamps.filter(t => now - t < 60000);
+            if (recent1Min.length >= ANTI_SPAM.MAX_MESSAGES_PER_MINUTE) {
+                const oldest = recent1Min[0];
                 const waitSeconds = Math.ceil((60000 - (now - oldest)) / 1000);
                 return {
                     allowed: false,
@@ -266,15 +287,24 @@
                 };
             }
 
-            timestamps.push(now);
+            // 2. Cek batas per sesi 15 menit (Max 25 pesan)
+            const recent15Min = timestamps.filter(t => now - t < 900000);
+            if (recent15Min.length >= ANTI_SPAM.MAX_MESSAGES_PER_SESSION) {
+                return {
+                    allowed: false,
+                    reason: `Batas interaksi sesi tercapai (${ANTI_SPAM.MAX_MESSAGES_PER_SESSION} pesan). Mohon tunggu beberapa saat lagi.`
+                };
+            }
+
+            recent15Min.push(now);
             try {
-                sessionStorage.setItem('sada_msg_timestamps', JSON.stringify(timestamps));
+                sessionStorage.setItem('sada_msg_timestamps', JSON.stringify(recent15Min));
             } catch (e) {}
 
             return { allowed: true };
         }
 
-        // Deteksi Spam Huruf/Karakter Berulang atau Keyboard Smashing
+        // Deteksi Spam Huruf/Karakter Berulang, Kata Toksik, atau Keyboard Smashing
         function validateAntiSpamInput(text) {
             const trimmed = text.trim();
 
@@ -286,28 +316,42 @@
                 return { valid: false, reason: `Pesan melebihi batas maksimal (${ANTI_SPAM.MAX_LENGTH} karakter).` };
             }
 
-            // 1. Deteksi Huruf Berulang Ekstrem (contoh: aaaaaaaa, wooooooooooy, 11111111)
-            const floodPattern = /(.)\1{7,}/i;
+            // 1. Deteksi Kata Toksik / Kasar di Client-Side
+            const lowerText = trimmed.toLowerCase();
+            for (let i = 0; i < CLIENT_TOXIC_WORDS.length; i++) {
+                if (lowerText.includes(CLIENT_TOXIC_WORDS[i])) {
+                    return { valid: false, reason: 'Mohon gunakan bahasa yang santun dan positif seputar SMKN 2 Mojokerto.' };
+                }
+            }
+
+            // 2. Deteksi Huruf/Simbol Berulang Ekstrem (contoh: aaaaaaa, wooooooy, 1111111, ???????)
+            const floodPattern = /(.)\1{5,}/i;
             if (floodPattern.test(trimmed)) {
                 return { valid: false, reason: 'Pesan mengandung karakter berulang yang tidak wajar.' };
             }
 
-            // 2. Deteksi Spam Duplikat Pesan Persis Sama dalam 45 Detik
+            // 3. Deteksi Pengulangan Kata Beruntun (contoh: tes tes tes tes, halo halo halo halo)
+            const wordRepeatPattern = /\b(\w+)\b(?:\s+\1\b){3,}/i;
+            if (wordRepeatPattern.test(trimmed)) {
+                return { valid: false, reason: 'Pesan mengandung kata berulang yang tidak wajar.' };
+            }
+
+            // 4. Deteksi Spam Duplikat Pesan Persis Sama dalam 45 Detik
             const now = Date.now();
             if (trimmed.toLowerCase() === lastSentMessage.toLowerCase() && (now - lastSentTime) < ANTI_SPAM.DUPLICATE_TIME_WINDOW) {
                 const remainingSecs = Math.ceil((ANTI_SPAM.DUPLICATE_TIME_WINDOW - (now - lastSentTime)) / 1000);
-                return { valid: false, reason: `Pertanyaan yang sama baru saja diajukan. Mohon tunggu ${remainingSecs} detik atau tanyakan hal lain.` };
+                return { valid: false, reason: `Pertanyaan yang sama baru saja diajukan. Mohon tunggu ${remainingSecs} detik atau ajukan pertanyaan lain.` };
             }
 
-            // 3. Deteksi Script Injection / XSS Ringan di Frontend
-            if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(trimmed) || /javascript:/i.test(trimmed)) {
-                return { valid: false, reason: 'Karakter atau format input tidak diizinkan.' };
+            // 5. Deteksi Script Injection / XSS di Frontend
+            if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(trimmed) || /javascript:/i.test(trimmed) || /<iframe/i.test(trimmed)) {
+                return { valid: false, reason: 'Format karakter input tidak diizinkan.' };
             }
 
             return { valid: true };
         }
 
-        // Mulai Cooldown Visual Countdown pada Tombol Kirim
+        // Mulai Cooldown Visual Countdown pada Tombol Kirim & Kunci Input
         function startCooldown(seconds) {
             isCooldownActive = true;
             let remaining = seconds;
@@ -323,6 +367,10 @@
                 cdText.classList.remove('hidden');
                 cdText.innerText = `${remaining}s`;
             }
+            if (inputField) {
+                inputField.disabled = true;
+                inputField.placeholder = `Tunggu jeda (${remaining}s)...`;
+            }
 
             if (cooldownTimer) clearInterval(cooldownTimer);
 
@@ -334,9 +382,14 @@
                     if (submitBtn) submitBtn.disabled = false;
                     if (sendIcon) sendIcon.classList.remove('hidden');
                     if (cdText) cdText.classList.add('hidden');
-                    if (inputField) inputField.focus();
+                    if (inputField) {
+                        inputField.disabled = false;
+                        inputField.placeholder = 'Ketik pesan...';
+                        inputField.focus();
+                    }
                 } else {
                     if (cdText) cdText.innerText = `${remaining}s`;
+                    if (inputField) inputField.placeholder = `Tunggu jeda (${remaining}s)...`;
                 }
             }, 1000);
         }
@@ -354,6 +407,24 @@
         const initTimeEl = document.getElementById('bot-init-time');
         if (initTimeEl) initTimeEl.innerText = getCurrentTimeString();
 
+        // Prevent Enter spam keydown
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputField = document.getElementById('chatbot-input');
+            if (inputField) {
+                inputField.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        if (isCooldownActive) {
+                            e.preventDefault();
+                            showSpamAlert('Mohon tunggu jeda waktu selesai.');
+                        } else if (isProcessing) {
+                            e.preventDefault();
+                            showSpamAlert('Sedang memproses jawaban, mohon tunggu sebentar.');
+                        }
+                    }
+                });
+            }
+        });
+
         window.toggleChatbot = function (forcedState) {
             const chatWindow = document.getElementById('chatbot-window');
             const iconOpen = document.getElementById('chatbot-icon-open');
@@ -368,7 +439,7 @@
                 iconOpen.classList.add('hidden');
                 iconClose.classList.remove('hidden');
                 if (tooltipBubble) tooltipBubble.classList.add('hidden');
-                setTimeout(() => inputField && inputField.focus(), 150);
+                setTimeout(() => inputField && !isCooldownActive && inputField.focus(), 150);
                 scrollChatToBottom();
             } else {
                 chatWindow.classList.add('hidden');
@@ -379,6 +450,10 @@
         };
 
         window.sendQuickPrompt = function (text) {
+            if (isCooldownActive || isProcessing) {
+                showSpamAlert('Mohon tunggu jeda sebelum memilih pertanyaan lain.');
+                return;
+            }
             const input = document.getElementById('chatbot-input');
             if (input) {
                 input.value = text;
@@ -389,6 +464,7 @@
         const SADA_AVATAR_URL = '{{ asset('images/sada-avatar.svg') }}';
 
         window.resetChatHistory = function () {
+            if (isProcessing) return;
             chatHistory = [];
             lastSentMessage = '';
             lastSentTime = 0;
@@ -399,28 +475,37 @@
 
             container.innerHTML = `
                 <div class="space-y-1">
-                    <span class="text-[11px] font-bold text-blue-600 pl-9">SADA</span>
+                    <span class="text-[11px] font-bold text-[#05529E] pl-9">SADA</span>
                     <div class="flex items-start gap-2">
                         <img src="${SADA_AVATAR_URL}" alt="SADA" class="h-7 w-7 object-contain shrink-0 mt-0.5">
                         <div class="max-w-[85%] rounded-2xl rounded-tl-none bg-white p-3.5 shadow-xs border border-slate-200/60 text-slate-800 leading-relaxed">
                             <p class="font-semibold text-slate-900">Riwayat dibersihkan ✨</p>
-                            <p class="mt-1">Silakan ajukan pertanyaan baru seputar <strong>SMKN 2 Kota Mojokerto</strong>.</p>
+                            <p class="mt-1">Silakan ajukan pertanyaan baru seputar <strong>SMKN 2 Kota Mojokerto (SKANEDA)</strong>.</p>
                         </div>
                     </div>
                     <div class="pl-9 text-[10px] text-slate-400">${getCurrentTimeString()}</div>
                 </div>
                 <div id="chatbot-chips" class="pt-1 pl-8 flex flex-wrap gap-1.5">
-                    <button type="button" onclick="sendQuickPrompt('Apa saja jurusan di SMKN 2 Mojokerto?')" class="rounded-full border border-blue-200 bg-white px-3 py-1 text-[11px] font-medium text-blue-800 shadow-2xs hover:bg-blue-50 hover:border-blue-400 transition">
-                        🎓 Jurusan SMKN 2
+                    <button type="button" onclick="sendQuickPrompt('Apa saja jurusan di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                        🎓 Jurusan SKANEDA
                     </button>
-                    <button type="button" onclick="sendQuickPrompt('Bagaimana informasi PPDB SMKN 2 Mojokerto?')" class="rounded-full border border-blue-200 bg-white px-3 py-1 text-[11px] font-medium text-blue-800 shadow-2xs hover:bg-blue-50 hover:border-blue-400 transition">
+                    <button type="button" onclick="sendQuickPrompt('Bagaimana informasi PPDB SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
                         📋 Info PPDB
                     </button>
-                    <button type="button" onclick="sendQuickPrompt('Apa visi dan misi SMKN 2 Mojokerto?')" class="rounded-full border border-blue-200 bg-white px-3 py-1 text-[11px] font-medium text-blue-800 shadow-2xs hover:bg-blue-50 hover:border-blue-400 transition">
+                    <button type="button" onclick="sendQuickPrompt('Fasilitas apa saja di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                        🏫 Fasilitas & Lab
+                    </button>
+                    <button type="button" onclick="sendQuickPrompt('Bagaimana cara melihat denah interaktif sekolah di web ini?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                        🗺️ Denah Interaktif
+                    </button>
+                    <button type="button" onclick="sendQuickPrompt('Apa saja ekstrakurikuler dan prestasi di SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                        🏆 Ekskul & Prestasi
+                    </button>
+                    <button type="button" onclick="sendQuickPrompt('Apa visi dan misi SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
                         🎯 Visi & Misi
                     </button>
-                    <button type="button" onclick="sendQuickPrompt('Fasilitas apa saja di SMKN 2 Mojokerto?')" class="rounded-full border border-blue-200 bg-white px-3 py-1 text-[11px] font-medium text-blue-800 shadow-2xs hover:bg-blue-50 hover:border-blue-400 transition">
-                        🏫 Fasilitas
+                    <button type="button" onclick="sendQuickPrompt('Di mana lokasi dan kontak resmi SMKN 2 Mojokerto?')" class="rounded-full border border-sky-200 bg-white px-3 py-1 text-[11px] font-semibold text-slate-800 shadow-2xs hover:bg-sky-50 hover:border-sky-400 transition cursor-pointer">
+                        📍 Lokasi & Kontak
                     </button>
                 </div>
             `;
@@ -436,28 +521,33 @@
         };
 
         async function submitMessage(message) {
-            // 1. Check Cooldown
-            if (isCooldownActive) {
-                showSpamAlert('Mohon tunggu countdown selesai sebelum mengirim pesan lagi.');
+            // 1. Cek Status Pemrosesan Aktif (In-Flight Lock)
+            if (isProcessing) {
+                showSpamAlert('Sedang memproses pesan sebelumnya, harap tunggu...');
                 return;
             }
 
-            // 2. Check Honeypot Trap (Automated Spam Bots)
+            // 2. Cek Cooldown Wajib
+            if (isCooldownActive) {
+                showSpamAlert('Mohon tunggu jeda countdown selesai sebelum mengirim pesan lagi.');
+                return;
+            }
+
+            // 3. Cek Honeypot Trap (Automated Spam Bots)
             const honeypot = document.getElementById('sada_security_code');
             if (honeypot && honeypot.value.trim() !== '') {
-                console.warn('Bot trap triggered.');
                 showSpamAlert('Permintaan tidak valid.');
                 return;
             }
 
-            // 3. Check Input Sanity & Gibberish / Duplicates
+            // 4. Validasi Karakter, Spam Pola, dan Duplikat
             const validation = validateAntiSpamInput(message);
             if (!validation.valid) {
                 showSpamAlert(validation.reason);
                 return;
             }
 
-            // 4. Check Client-Side Rolling Rate Limit
+            // 5. Cek Batas Frekuensi Browser (Rolling Rate Limit)
             const rateLimit = checkClientRateLimit();
             if (!rateLimit.allowed) {
                 showSpamAlert(rateLimit.reason);
@@ -465,6 +555,7 @@
             }
 
             hideSpamAlert();
+            isProcessing = true;
 
             const input = document.getElementById('chatbot-input');
             const typingIndicator = document.getElementById('chatbot-typing');
@@ -477,13 +568,13 @@
             lastSentMessage = message;
             lastSentTime = Date.now();
 
-            // Append User Bubble
+            // Tampilkan Pesan Pengguna
             appendUserMessage(message);
 
-            // Add to client history
+            // Tambahkan ke riwayat lokal
             chatHistory.push({ role: 'user', content: message });
 
-            // Mulai Cooldown Timer JavaScript
+            // Kunci & Mulai Countdown Cooldown JS
             startCooldown(ANTI_SPAM.COOLDOWN_SECONDS);
 
             if (typingIndicator) typingIndicator.classList.remove('hidden');
@@ -515,13 +606,14 @@
                     const fallbackMsg = data.message || 'Maaf, terjadi kendala saat memproses jawaban.';
                     appendBotMessage(`⚠️ ${fallbackMsg}`);
                     if (response.status === 429) {
-                        showSpamAlert('Aktivitas Anda terlalu cepat. Silakan tunggu sebentar.');
+                        showSpamAlert('Aktivitas Anda terlalu cepat. Silakan tunggu beberapa detik.');
                     }
                 }
             } catch (err) {
                 console.error('Chatbot error:', err);
-                appendBotMessage('⚠️ Maaf, koneksi ke server sedang terganggu.');
+                appendBotMessage('⚠️ Maaf, koneksi ke server sedang terganggu. Silakan coba lagi.');
             } finally {
+                isProcessing = false;
                 if (typingIndicator) typingIndicator.classList.add('hidden');
                 scrollChatToBottom();
             }
@@ -628,8 +720,27 @@
                     '</div>';
             });
 
+            // 3. Replace [LIHAT_DENAH:room_slug:Room Name] with Denah button
+            html = html.replace(/\[LIHAT_DENAH:([a-zA-Z0-9_-]+):(.*?)\]/g, function (match, slug, roomName) {
+                return '<div class="mt-2.5 pt-2 border-t border-slate-100">' +
+                    '<button type="button" onclick="openDenahRoom(\'' + slug + '\')" class="inline-flex items-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-700 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition cursor-pointer w-full justify-center">' +
+                    '<span>🗺️ Lihat ' + roomName + ' di Denah</span>' +
+                    '</button>' +
+                    '</div>';
+            });
+
             return html;
         }
+
+        window.openDenahRoom = function (slug) {
+            const denahEl = document.getElementById('denah');
+            if (denahEl) {
+                denahEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.dispatchEvent(new CustomEvent('sada:select-room', { detail: { slug: slug } }));
+            } else {
+                window.location.href = '/denah?room=' + encodeURIComponent(slug);
+            }
+        };
 
         window.scrollToMajorSection = function (anchorId) {
             const el = document.getElementById(anchorId);
