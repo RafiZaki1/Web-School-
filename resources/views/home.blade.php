@@ -531,8 +531,10 @@
             </div>
             @endforeach
         </div>
-        {{-- ============ PROGRAM KEAHLIAN / JURUSAN ============ --}}
-        <section id="jurusan" class="border-t border-slate-200/80 bg-[#f8fafc] py-16 px-5 lg:px-8"
+    </section>
+
+    {{-- ============ PROGRAM KEAHLIAN / JURUSAN ============ --}}
+    <section id="jurusan" class="border-t border-slate-200/80 bg-[#f8fafc] py-16 px-5 lg:px-8"
             x-data="{
                 currentIndex: 0,
                 total: 7,
@@ -713,8 +715,6 @@
                 </div>
             </div>
         </section>
-        </section>
-        {{-- ^ menutup section id=profil yang sebelumnya tidak tertutup --}}
 
         {{-- ============ DENAH INTERAKTIF ============ --}}
         <x-denah-interaktif />
@@ -904,9 +904,6 @@
                 </div>
             </div>
         </section>
-
-        {{-- ============ DENAH INTERAKTIF SEKOLAH ============ --}}
-        <x-denah-interaktif />
 
         {{-- ============ FOOTER (FULL WIDTH SEPERTI NAVBAR & TEKS WARNA PUTIH) ============ --}}
         <footer id="kontak" class="bg-gradient-to-b from-[#05529E] via-[#03315F] to-[#021D37] text-white">
