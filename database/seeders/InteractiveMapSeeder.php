@@ -42,79 +42,103 @@ class InteractiveMapSeeder extends Seeder
             $categories[$cat['slug']] = RoomCategory::create($cat);
         }
 
-        // 2. Realistic Human Walkway Nodes (24 waypoints along all real corridors)
+        // 2. Realistic Human Walkway Nodes (30 waypoints along all real physical corridors)
         $nodesData = [
-            1  => ['id' => 1,  'name' => 'Gerbang Utama / Pos Satpam', 'x' => 51.5, 'y' => 91.0, 'is_walkable' => true],
-            2  => ['id' => 2,  'name' => 'Trotoar Depan Gerbang Barat', 'x' => 39.0, 'y' => 91.0, 'is_walkable' => true],
-            3  => ['id' => 3,  'name' => 'Depan Gedung Kantor', 'x' => 39.0, 'y' => 85.0, 'is_walkable' => true],
-            4  => ['id' => 4,  'name' => 'Plaza Air Mancur Barat', 'x' => 39.0, 'y' => 71.0, 'is_walkable' => true],
-            5  => ['id' => 5,  'name' => 'Plaza Air Mancur Timur', 'x' => 57.0, 'y' => 71.0, 'is_walkable' => true],
-            6  => ['id' => 6,  'name' => 'Jalur Pintu Masuk Musholla', 'x' => 64.0, 'y' => 84.0, 'is_walkable' => true],
-            7  => ['id' => 7,  'name' => 'Depan BKK / Koperasi / Bank', 'x' => 23.0, 'y' => 85.0, 'is_walkable' => true],
-            8  => ['id' => 8,  'name' => 'Jalur Parkiran Barat', 'x' => 14.0, 'y' => 50.0, 'is_walkable' => true],
+            1  => ['id' => 1,  'name' => 'Pos Satpam & Gerbang Utama', 'x' => 52.0, 'y' => 84.0, 'is_walkable' => true],
+            2  => ['id' => 2,  'name' => 'Trotoar Depan Gerbang Barat', 'x' => 39.0, 'y' => 89.0, 'is_walkable' => true],
+            3  => ['id' => 3,  'name' => 'Lorong Sisi Barat Kantor', 'x' => 39.0, 'y' => 80.0, 'is_walkable' => true],
+            4  => ['id' => 4,  'name' => 'Plaza Air Mancur Barat', 'x' => 38.5, 'y' => 69.5, 'is_walkable' => true],
+            5  => ['id' => 5,  'name' => 'Plaza Air Mancur Timur', 'x' => 58.5, 'y' => 69.5, 'is_walkable' => true],
+            6  => ['id' => 6,  'name' => 'Pintu Masuk Musholla', 'x' => 64.0, 'y' => 78.0, 'is_walkable' => true],
+            7  => ['id' => 7,  'name' => 'Depan BKK / Koperasi / Bank', 'x' => 23.0, 'y' => 89.0, 'is_walkable' => true],
+            8  => ['id' => 8,  'name' => 'Jalur Parkiran Barat (Selatan)', 'x' => 14.0, 'y' => 89.0, 'is_walkable' => true],
+            9  => ['id' => 9,  'name' => 'Jalur Parkiran Barat (Tengah)', 'x' => 14.0, 'y' => 50.0, 'is_walkable' => true],
+            10 => ['id' => 10, 'name' => 'Jalur Parkiran Barat (Utara)', 'x' => 14.0, 'y' => 32.0, 'is_walkable' => true],
 
-            9  => ['id' => 9,  'name' => 'Lorong Gedung DKV Barat', 'x' => 28.5, 'y' => 50.0, 'is_walkable' => true],
-            10 => ['id' => 10, 'name' => 'Lorong Depan X RPL Tengah', 'x' => 46.5, 'y' => 50.0, 'is_walkable' => true],
-            11 => ['id' => 11, 'name' => 'Plaza Timur (Depan Perpus)', 'x' => 69.0, 'y' => 50.0, 'is_walkable' => true],
-            12 => ['id' => 12, 'name' => 'Lorong Gedung Timur Depan UKS', 'x' => 70.0, 'y' => 70.0, 'is_walkable' => true],
-            13 => ['id' => 13, 'name' => 'Depan Ruang UKS & BK Timur', 'x' => 85.0, 'y' => 76.0, 'is_walkable' => true],
+            11 => ['id' => 11, 'name' => 'Lorong DKV / LPS (Selatan)', 'x' => 28.5, 'y' => 69.5, 'is_walkable' => true],
+            12 => ['id' => 12, 'name' => 'Lorong DKV / LPS (Tengah)', 'x' => 28.5, 'y' => 50.0, 'is_walkable' => true],
+            13 => ['id' => 13, 'name' => 'Lorong DKV / LPS (Utara)', 'x' => 28.5, 'y' => 32.0, 'is_walkable' => true],
 
-            14 => ['id' => 14, 'name' => 'Persimpangan Barat Tengah', 'x' => 28.5, 'y' => 32.0, 'is_walkable' => true],
-            15 => ['id' => 15, 'name' => 'Persimpangan Tengah (X RPL Utara)', 'x' => 46.5, 'y' => 32.0, 'is_walkable' => true],
-            16 => ['id' => 16, 'name' => 'Jalan Depan Aula & Lab RPL', 'x' => 57.0, 'y' => 32.0, 'is_walkable' => true],
-            17 => ['id' => 17, 'name' => 'Depan Perpus Utara & Kuliner', 'x' => 73.5, 'y' => 32.0, 'is_walkable' => true],
-            18 => ['id' => 18, 'name' => 'Jalur Masuk Lapangan Olahraga', 'x' => 88.5, 'y' => 32.0, 'is_walkable' => true],
-            19 => ['id' => 19, 'name' => 'Area Lapangan Olahraga', 'x' => 94.0, 'y' => 18.0, 'is_walkable' => true],
+            14 => ['id' => 14, 'name' => 'Persimpangan Lapangan Tengah (Selatan)', 'x' => 46.5, 'y' => 69.5, 'is_walkable' => true],
+            15 => ['id' => 15, 'name' => 'Persimpangan Tengah Utara (APHP)', 'x' => 46.5, 'y' => 32.0, 'is_walkable' => true],
 
-            20 => ['id' => 20, 'name' => 'Koridor Depan Kantin & APHP', 'x' => 32.0, 'y' => 10.0, 'is_walkable' => true],
-            21 => ['id' => 21, 'name' => 'Jalur Antara APHP & Kelas Atas', 'x' => 53.0, 'y' => 10.0, 'is_walkable' => true],
-            22 => ['id' => 22, 'name' => 'Depan Lab RPL 1 & 2', 'x' => 57.0, 'y' => 18.0, 'is_walkable' => true],
-            23 => ['id' => 23, 'name' => 'Koridor Kelas XI & XII RPL/Kuliner', 'x' => 75.0, 'y' => 10.0, 'is_walkable' => true],
-            24 => ['id' => 24, 'name' => 'Pojok Timur Laut Lapangan', 'x' => 88.5, 'y' => 10.0, 'is_walkable' => true],
+            16 => ['id' => 16, 'name' => 'Jalan Depan Aula & Lab RPL', 'x' => 58.5, 'y' => 32.0, 'is_walkable' => true],
+            17 => ['id' => 17, 'name' => 'Lorong Timur RPL (Sisi Barat Musholla)', 'x' => 58.5, 'y' => 50.0, 'is_walkable' => true],
+
+            18 => ['id' => 18, 'name' => 'Depan Ruang UKS & BK (Selatan)', 'x' => 70.5, 'y' => 69.5, 'is_walkable' => true],
+            19 => ['id' => 19, 'name' => 'Lorong Gedung Timur Depan UKS', 'x' => 70.5, 'y' => 50.0, 'is_walkable' => true],
+            20 => ['id' => 20, 'name' => 'Depan Percetakan & Lab Kuliner', 'x' => 70.5, 'y' => 32.0, 'is_walkable' => true],
+            21 => ['id' => 21, 'name' => 'Jalur Masuk Lapangan Olahraga', 'x' => 88.5, 'y' => 32.0, 'is_walkable' => true],
+            22 => ['id' => 22, 'name' => 'Area Lapangan Olahraga', 'x' => 94.0, 'y' => 18.0, 'is_walkable' => true],
+
+            23 => ['id' => 23, 'name' => 'Lorong Masuk Lab RPL 1 & 2', 'x' => 58.5, 'y' => 17.5, 'is_walkable' => true],
+            24 => ['id' => 24, 'name' => 'Pintu Masuk Lab RPL 1', 'x' => 65.5, 'y' => 17.5, 'is_walkable' => true],
+            25 => ['id' => 25, 'name' => 'Pintu Masuk Lab RPL 2', 'x' => 76.0, 'y' => 17.5, 'is_walkable' => true],
+
+            26 => ['id' => 26, 'name' => 'Koridor Depan Kantin & Kolam', 'x' => 28.5, 'y' => 10.0, 'is_walkable' => true],
+            27 => ['id' => 27, 'name' => 'Jalur Antara APHP & Bakery', 'x' => 46.5, 'y' => 10.0, 'is_walkable' => true],
+            28 => ['id' => 28, 'name' => 'Koridor Depan Lab RPL Atas', 'x' => 58.5, 'y' => 10.0, 'is_walkable' => true],
+            29 => ['id' => 29, 'name' => 'Koridor Kelas XI & XII Utara', 'x' => 75.0, 'y' => 10.0, 'is_walkable' => true],
+            30 => ['id' => 30, 'name' => 'Pojok Timur Laut Lapangan', 'x' => 88.5, 'y' => 10.0, 'is_walkable' => true],
         ];
 
         foreach ($nodesData as $n) {
             MapNode::create($n);
         }
 
-        // 3. Map Edges (Walkway Network)
+        // 3. Map Edges (Physical Walkway Network)
         $edgesData = [
-            ['from_node_id' => 1, 'to_node_id' => 2, 'distance' => 14.0, 'is_walkable' => true],
-            ['from_node_id' => 2, 'to_node_id' => 3, 'distance' => 8.0, 'is_walkable' => true],
+            // Jalur Depan / Kantor
+            ['from_node_id' => 1, 'to_node_id' => 2, 'distance' => 13.0, 'is_walkable' => true],
+            ['from_node_id' => 2, 'to_node_id' => 3, 'distance' => 9.0, 'is_walkable' => true],
             ['from_node_id' => 2, 'to_node_id' => 7, 'distance' => 16.0, 'is_walkable' => true],
-            ['from_node_id' => 3, 'to_node_id' => 4, 'distance' => 15.0, 'is_walkable' => true],
-            ['from_node_id' => 4, 'to_node_id' => 5, 'distance' => 18.0, 'is_walkable' => true],
-            ['from_node_id' => 4, 'to_node_id' => 9, 'distance' => 22.0, 'is_walkable' => true],
-            ['from_node_id' => 5, 'to_node_id' => 6, 'distance' => 14.0, 'is_walkable' => true],
-            ['from_node_id' => 5, 'to_node_id' => 10, 'distance' => 22.0, 'is_walkable' => true],
-            ['from_node_id' => 5, 'to_node_id' => 11, 'distance' => 22.0, 'is_walkable' => true],
-            ['from_node_id' => 5, 'to_node_id' => 12, 'distance' => 15.0, 'is_walkable' => true],
+            ['from_node_id' => 7, 'to_node_id' => 8, 'distance' => 9.0, 'is_walkable' => true],
+            ['from_node_id' => 8, 'to_node_id' => 9, 'distance' => 39.0, 'is_walkable' => true],
+            ['from_node_id' => 9, 'to_node_id' => 10, 'distance' => 18.0, 'is_walkable' => true],
+            ['from_node_id' => 3, 'to_node_id' => 4, 'distance' => 11.0, 'is_walkable' => true],
 
-            ['from_node_id' => 7, 'to_node_id' => 8, 'distance' => 36.0, 'is_walkable' => true],
-            ['from_node_id' => 7, 'to_node_id' => 9, 'distance' => 35.0, 'is_walkable' => true],
-            ['from_node_id' => 8, 'to_node_id' => 14, 'distance' => 24.0, 'is_walkable' => true],
+            // Plaza Air Mancur & Lapangan Tengah
+            ['from_node_id' => 4, 'to_node_id' => 11, 'distance' => 10.0, 'is_walkable' => true],
+            ['from_node_id' => 4, 'to_node_id' => 14, 'distance' => 8.0, 'is_walkable' => true],
+            ['from_node_id' => 14, 'to_node_id' => 5, 'distance' => 12.0, 'is_walkable' => true],
+            ['from_node_id' => 4, 'to_node_id' => 5, 'distance' => 20.0, 'is_walkable' => true],
 
-            ['from_node_id' => 9, 'to_node_id' => 14, 'distance' => 18.0, 'is_walkable' => true],
-            ['from_node_id' => 10, 'to_node_id' => 15, 'distance' => 18.0, 'is_walkable' => true],
-            ['from_node_id' => 11, 'to_node_id' => 12, 'distance' => 20.0, 'is_walkable' => true],
-            ['from_node_id' => 11, 'to_node_id' => 17, 'distance' => 18.0, 'is_walkable' => true],
-            ['from_node_id' => 12, 'to_node_id' => 13, 'distance' => 16.0, 'is_walkable' => true],
+            // Lorong DKV / LPS (Barat)
+            ['from_node_id' => 11, 'to_node_id' => 12, 'distance' => 19.5, 'is_walkable' => true],
+            ['from_node_id' => 12, 'to_node_id' => 13, 'distance' => 18.0, 'is_walkable' => true],
+            ['from_node_id' => 9, 'to_node_id' => 12, 'distance' => 14.5, 'is_walkable' => true],
+            ['from_node_id' => 10, 'to_node_id' => 13, 'distance' => 14.5, 'is_walkable' => true],
 
-            ['from_node_id' => 14, 'to_node_id' => 15, 'distance' => 18.0, 'is_walkable' => true],
-            ['from_node_id' => 14, 'to_node_id' => 20, 'distance' => 22.0, 'is_walkable' => true],
+            // Jalan Tengah Utara (Depan Aula / Lab RPL)
+            ['from_node_id' => 13, 'to_node_id' => 15, 'distance' => 18.0, 'is_walkable' => true],
             ['from_node_id' => 15, 'to_node_id' => 16, 'distance' => 12.0, 'is_walkable' => true],
-            ['from_node_id' => 15, 'to_node_id' => 21, 'distance' => 22.0, 'is_walkable' => true],
-            ['from_node_id' => 16, 'to_node_id' => 17, 'distance' => 16.0, 'is_walkable' => true],
-            ['from_node_id' => 16, 'to_node_id' => 22, 'distance' => 14.0, 'is_walkable' => true],
-            ['from_node_id' => 17, 'to_node_id' => 18, 'distance' => 15.0, 'is_walkable' => true],
-            ['from_node_id' => 18, 'to_node_id' => 19, 'distance' => 16.0, 'is_walkable' => true],
-            ['from_node_id' => 18, 'to_node_id' => 24, 'distance' => 22.0, 'is_walkable' => true],
+            ['from_node_id' => 16, 'to_node_id' => 20, 'distance' => 12.0, 'is_walkable' => true],
+            ['from_node_id' => 20, 'to_node_id' => 21, 'distance' => 18.0, 'is_walkable' => true],
+            ['from_node_id' => 21, 'to_node_id' => 22, 'distance' => 15.0, 'is_walkable' => true],
 
-            ['from_node_id' => 20, 'to_node_id' => 21, 'distance' => 21.0, 'is_walkable' => true],
-            ['from_node_id' => 21, 'to_node_id' => 22, 'distance' => 10.0, 'is_walkable' => true],
-            ['from_node_id' => 22, 'to_node_id' => 23, 'distance' => 20.0, 'is_walkable' => true],
-            ['from_node_id' => 23, 'to_node_id' => 24, 'distance' => 14.0, 'is_walkable' => true],
-            ['from_node_id' => 24, 'to_node_id' => 19, 'distance' => 10.0, 'is_walkable' => true],
+            // Jalur Timur RPL (Menuju Aula & Lab RPL dari Selatan) - JALAN PAVING ASLI
+            ['from_node_id' => 5, 'to_node_id' => 17, 'distance' => 19.5, 'is_walkable' => true],
+            ['from_node_id' => 17, 'to_node_id' => 16, 'distance' => 18.0, 'is_walkable' => true],
+
+            // Jalur Musholla & UKS / Percetakan
+            ['from_node_id' => 5, 'to_node_id' => 6, 'distance' => 10.0, 'is_walkable' => true],
+            ['from_node_id' => 5, 'to_node_id' => 18, 'distance' => 12.0, 'is_walkable' => true],
+            ['from_node_id' => 18, 'to_node_id' => 19, 'distance' => 19.5, 'is_walkable' => true],
+            ['from_node_id' => 19, 'to_node_id' => 20, 'distance' => 18.0, 'is_walkable' => true],
+
+            // Akses Lab RPL 1 & 2
+            ['from_node_id' => 16, 'to_node_id' => 23, 'distance' => 14.5, 'is_walkable' => true],
+            ['from_node_id' => 23, 'to_node_id' => 24, 'distance' => 7.0, 'is_walkable' => true],
+            ['from_node_id' => 24, 'to_node_id' => 25, 'distance' => 10.5, 'is_walkable' => true],
+
+            // Jalur Utara (Kantin, Kolam, APHP, Kelas Atas)
+            ['from_node_id' => 13, 'to_node_id' => 26, 'distance' => 22.0, 'is_walkable' => true],
+            ['from_node_id' => 26, 'to_node_id' => 27, 'distance' => 18.0, 'is_walkable' => true],
+            ['from_node_id' => 27, 'to_node_id' => 28, 'distance' => 12.0, 'is_walkable' => true],
+            ['from_node_id' => 28, 'to_node_id' => 23, 'distance' => 7.5, 'is_walkable' => true],
+            ['from_node_id' => 28, 'to_node_id' => 29, 'distance' => 16.5, 'is_walkable' => true],
+            ['from_node_id' => 29, 'to_node_id' => 30, 'distance' => 13.5, 'is_walkable' => true],
+            ['from_node_id' => 30, 'to_node_id' => 21, 'distance' => 22.0, 'is_walkable' => true],
         ];
 
         foreach ($edgesData as $edge) {
@@ -712,7 +736,7 @@ class InteractiveMapSeeder extends Seeder
                 'image' => 'rooms/laboratorium-rpl.jpg',
                 'open_hours' => '07.00 - 16.00 WIB',
                 'is_active' => true,
-                'map_x' => 60.0, 'map_y' => 20.5, 'map_width' => 11.5, 'map_height' => 5.5, 'map_node_id' => 22,
+                'map_x' => 60.0, 'map_y' => 20.5, 'map_width' => 11.5, 'map_height' => 5.5, 'map_node_id' => 24,
                 'facilities' => [
                     ['name' => '36 PC Core i7 High End', 'quantity' => 36],
                     ['name' => 'Smart Screen & Proyektor', 'quantity' => 1],
@@ -729,7 +753,7 @@ class InteractiveMapSeeder extends Seeder
                 'image' => 'rooms/laboratorium-rpl.jpg',
                 'open_hours' => '07.00 - 16.00 WIB',
                 'is_active' => true,
-                'map_x' => 72.0, 'map_y' => 20.5, 'map_width' => 8.8, 'map_height' => 5.5, 'map_node_id' => 22,
+                'map_x' => 72.0, 'map_y' => 20.5, 'map_width' => 8.8, 'map_height' => 5.5, 'map_node_id' => 25,
                 'facilities' => [
                     ['name' => 'Workstation Developer', 'quantity' => 36],
                     ['name' => 'Server Mini & Switch', 'quantity' => 2],

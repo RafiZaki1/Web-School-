@@ -26,3 +26,11 @@ Homestead.yaml
 /frontend/node_modules
 /frontend/dist
 /frontend/.env
+
+# frontend-next ignores
+/frontend-next/node_modules
+/frontend-next/.next
+/frontend-next/.env*
+!/frontend-next/.env.example
+/frontend-next/out
+
