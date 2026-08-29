@@ -37,22 +37,38 @@
                 <a href="{{ route('home') }}#beranda" class="transition hover:text-cyan-300 uppercase">HOME</a>
                 <a href="{{ route('home') }}#profil" class="transition hover:text-cyan-300 uppercase">PROFIL</a>
                 <a href="{{ route('home') }}#jurusan" class="transition hover:text-cyan-300 uppercase">JURUSAN</a>
-                <div class="group relative flex items-center gap-1.5 py-3 cursor-pointer hover:text-cyan-300 transition">
-                    <span class="uppercase text-cyan-300 font-black">INFORMASI</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 transition duration-200 group-hover:rotate-180 text-cyan-300 pointer-events-none">
-                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
+                <div x-data="{ open: false, timer: null }" 
+                     @mouseenter="clearTimeout(timer); open = true" 
+                     @mouseleave="timer = setTimeout(() => { open = false }, 200)" 
+                     class="relative flex items-center py-3 select-none">
+                    <button type="button" 
+                            @click="open = !open" 
+                            class="flex items-center gap-1.5 uppercase font-bold tracking-widest text-cyan-300 hover:text-white transition cursor-pointer focus:outline-none">
+                        <span>INFORMASI</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4 transition duration-200 pointer-events-none" :class="{ 'rotate-180': open }">
+                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
 
-                    {{-- Dropdown Menu Container with Hover Bridge (No gap) --}}
-                    <div class="invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 absolute left-1/2 -translate-x-1/2 top-full pt-1.5 min-w-[210px] transition-all duration-150 z-50 before:absolute before:-top-3 before:inset-x-0 before:h-4 before:content-['']">
-                        <div class="rounded-2xl bg-white/95 backdrop-blur-md p-2 shadow-2xl ring-1 ring-black/5 text-slate-800 tracking-normal normal-case font-medium">
-                            <a href="{{ route('home') }}#informasi" class="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold hover:bg-sky-50 hover:text-blue-700 transition">
+                    {{-- Dropdown Menu Container --}}
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                         @click.outside="open = false"
+                         x-cloak
+                         class="absolute left-1/2 -translate-x-1/2 top-full pt-1.5 min-w-[210px] z-50">
+                        <div class="rounded-2xl bg-white p-2 shadow-2xl ring-1 ring-slate-900/10 text-slate-800 tracking-normal normal-case font-medium">
+                            <a href="{{ route('home') }}#informasi" @click="open = false" class="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-sky-50 hover:text-blue-700 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                                 </svg>
                                 <span>Berita & Informasi</span>
                             </a>
-                            <a href="{{ route('denah') }}" class="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold bg-sky-50 text-blue-700 transition">
+                            <a href="{{ route('denah') }}" @click="open = false" class="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold bg-sky-50 text-blue-700 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                 </svg>
