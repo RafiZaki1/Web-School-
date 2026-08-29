@@ -79,7 +79,7 @@ class LandingPageSeeder extends Seeder
                 'principal_photo' => null,
                 'welcome_message' => 'Selamat datang di website resmi SMK Negeri 2 Kota Mojokerto. Kami berkomitmen memberikan pengalaman belajar terbaik yang memadukan keunggulan kompetensi kejuruan, teknologi modern, dan penanaman budi pekerti luhur bagi seluruh peserta didik.',
                 'background_image' => null,
-                'established_year' => 2004,
+                'established_year' => 2013,
             ]
         );
     }
