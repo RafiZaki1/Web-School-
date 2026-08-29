@@ -11,6 +11,9 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-smkn2.png') }}">
     
+    {{-- Alpine.js for Dynamic Interactive Floorplan Map & Components --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -66,6 +69,7 @@
                 <a href="#beranda" class="transition hover:text-cyan-300 uppercase">HOME</a>
                 <a href="#profil" class="transition hover:text-cyan-300 uppercase">PROFIL</a>
                 <a href="#jurusan" class="transition hover:text-cyan-300 uppercase">JURUSAN</a>
+                <a href="#denah" class="transition hover:text-cyan-300 uppercase">DENAH</a>
                 <a href="#informasi" class="transition hover:text-cyan-300 uppercase">INFORMASI</a>
                 <div class="group relative flex items-center gap-1.5 cursor-pointer hover:text-cyan-300 transition">
                     <a href="#kesiswaan" class="uppercase">KESISWAAN</a>
@@ -91,7 +95,7 @@
     @php
     $heroBg = file_exists(public_path('hero-bg.jpg')) ? asset('hero-bg.jpg') : (file_exists(public_path('hero-bg.png')) ? asset('hero-bg.png') : ($imageUrl(data_get($hero, 'background_image')) ?? asset('images/hero-bg.jpg')));
     @endphp
-    <section id="beranda" class="relative overflow-hidden min-h-[750px] lg:h-[800px] flex flex-col justify-between pt-24 pb-8 text-white bg-[#05529E]">
+    <section id="beranda" class="relative overflow-hidden min-h-[780px] lg:h-[840px] flex flex-col justify-between pt-24 pb-8 text-white bg-[#05529E]">
         {{-- Foto Background Sekolah --}}
         <img src="{{ $heroBg }}" alt="{{ $schoolName }}" class="absolute inset-0 h-full w-full object-cover object-center opacity-100">
         
@@ -99,7 +103,7 @@
         <div class="absolute inset-0 pointer-events-none" style="background: linear-gradient(180deg, rgba(5, 82, 158, 0.48) 0%, rgba(8, 133, 209, 0.38) 55%, rgba(66, 184, 242, 0.30) 100%);"></div>
 
         {{-- Center Hero Content --}}
-        <div class="relative mx-auto mt-4 mb-1 max-w-[1280px] w-full px-6 text-center">
+        <div class="relative mx-auto mt-4 mb-2 max-w-[1280px] w-full px-6 text-center">
             <p class="text-xs sm:text-sm font-black uppercase tracking-[0.25em] text-white">
                 SMKN 2 KOTA MOJOKERTO
             </p>
@@ -126,8 +130,8 @@
             </a>
         </div>
 
-        {{-- Arc Carousel: Posisi dinaikkan & Lengkungan lebih jelas (arcDrop = 120px) --}}
-        <div id="arc-carousel-section" class="relative w-full -mt-2 sm:-mt-6 pb-12 sm:pb-16" style="min-height:340px;">
+        {{-- Arc Carousel: Jarak 4-5 spasi (~40px - 48px) dari tombol Kotak Aspirasi --}}
+        <div id="arc-carousel-section" class="relative w-full mt-8 sm:mt-11 pb-12 sm:pb-16" style="min-height:340px;">
             <div id="arc-carousel" class="relative w-full overflow-visible" style="height:290px;">
                 {{-- Foto dirender via JS --}}
             </div>
@@ -600,6 +604,9 @@
         </section>
         </section>
         {{-- ^ menutup section id=profil yang sebelumnya tidak tertutup --}}
+
+        {{-- ============ DENAH INTERAKTIF ============ --}}
+        <x-denah-interaktif />
 
         {{-- ============ MITRA INDUSTRI KAMI ============ --}}
         {{-- NOTE: belum ada aset logo mitra, jadi masih placeholder kosong.
