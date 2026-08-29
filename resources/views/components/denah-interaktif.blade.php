@@ -1,702 +1,725 @@
-{{-- ============ DENAH INTERAKTIF SEKOLAH (MENGGUNAKAN GAMBAR ASLI & BISA DIKLIK PER RUANG/KELAS) ============ --}}
-<section id="denah" class="relative z-10 py-16 px-4 sm:px-6 lg:px-8 bg-[#f2f7fc]" x-data="denahInteraktif()">
-    <div class="mx-auto w-full max-w-[1280px]">
+{{-- ============ DENAH INTERAKTIF SEKOLAH (DINAMIS DENGAN BACKEND ROUTING GRAPH) ============ --}}
+<section id="denah" class="relative z-10 py-10 sm:py-14 px-4 sm:px-6 lg:px-8 bg-[#f0f6fc]" x-data="denahInteraktifApp()" x-init="initData()">
+    <div class="mx-auto w-full max-w-[1360px] space-y-6">
         
         {{-- Section Header --}}
-        <div class="text-center max-w-2xl mx-auto mb-10">
-            <h2 class="text-3xl sm:text-4xl lg:text-[40px] font-black text-[#102a43] tracking-tight">
-                Denah Interaktif
-            </h2>
-            <p class="mt-3 text-sm sm:text-base text-slate-500 font-normal leading-relaxed">
-                Jelajahi denah sekolah kami dan temukan berbagai ruang serta fasilitas dengan mudah.
-            </p>
-        </div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="h-11 w-11 rounded-2xl bg-[#05529E] text-white flex items-center justify-center text-xl shadow-md shadow-blue-900/20 shrink-0">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-[#102a43] tracking-tight">
+                        Denah Interaktif
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500 font-normal">
+                        Jelajahi denah sekolah kami dan temukan berbagai ruang serta fasilitas dengan mudah.
+                    </p>
+                </div>
+            </div>
 
-        {{-- Main Outer Card Container (White Card with Large Rounded Corners & Soft Shadow) --}}
-        <div class="bg-white rounded-3xl sm:rounded-[32px] border border-slate-100 shadow-xl shadow-slate-200/50 p-5 sm:p-7 lg:p-9 space-y-6">
-            
-            {{-- Top Section: Left Sidebar, Center Map & Search, Right Info Panel --}}
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
-                {{-- 1. Left Sidebar: Filter Categories (lg:col-span-2) --}}
-                <div class="lg:col-span-2 flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-none">
-                    <template x-for="cat in categories" :key="cat.name">
-                        <button 
-                            type="button"
-                            @click="setCategory(cat.name)"
-                            :class="activeCategory === cat.name 
-                                ? 'bg-[#152e4d] text-white shadow-md shadow-slate-900/10 font-bold' 
-                                : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-semibold border border-slate-100'"
-                            class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs sm:text-[13px] whitespace-nowrap transition-all duration-200 text-left w-full">
-                            <span class="text-sm opacity-90" x-html="cat.icon"></span>
-                            <span x-text="cat.name"></span>
-                        </button>
+            {{-- Top Right: Search Bar --}}
+            <div class="relative w-full md:w-80" @click.outside="showSearchDropdown = false">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input 
+                    type="text" 
+                    x-model="searchQuery"
+                    @input.debounce.300ms="handleSearchInput()"
+                    @focus="if(searchResults.length > 0) showSearchDropdown = true"
+                    placeholder="Cari ruangan atau fasilitas..." 
+                    class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-10 pr-9 text-xs sm:text-[13px] text-slate-800 placeholder-slate-400 focus:border-[#05529E] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#05529E]/15 shadow-xs transition"
+                />
+                <button 
+                    x-show="searchQuery.length > 0" 
+                    @click="clearSearch()"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                {{-- Autocomplete Dropdown --}}
+                <div 
+                    x-show="showSearchDropdown && searchResults.length > 0"
+                    x-transition
+                    class="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-64 overflow-y-auto rounded-2xl bg-white p-2 shadow-2xl border border-slate-200 divide-y divide-slate-100 text-xs">
+                    <template x-for="item in searchResults" :key="item.id">
+                        <div 
+                            @click="selectRoom(item); showSearchDropdown = false;"
+                            class="flex items-center justify-between p-2.5 rounded-xl hover:bg-sky-50 cursor-pointer transition">
+                            <div>
+                                <p class="font-bold text-slate-900" x-text="item.name"></p>
+                                <p class="text-[11px] text-slate-500" x-text="item.building_name || (item.category ? item.category.name : '')"></p>
+                            </div>
+                            <span class="text-[10px] font-semibold text-sky-700 bg-sky-100 px-2 py-0.5 rounded-full" x-text="item.category ? item.category.name : 'Ruangan'"></span>
+                        </div>
                     </template>
                 </div>
+            </div>
+        </div>
 
-                {{-- 2. Center: Search Bar + Interactive Photo Map (lg:col-span-6) --}}
-                <div class="lg:col-span-6 flex flex-col space-y-3.5">
+        {{-- Main 2-Column Content Layout: Expanded Map Canvas (Left lg:col-span-8) + Detail & Chatbot (Right lg:col-span-4) --}}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+
+            {{-- 1. Expanded Interactive Map Canvas (lg:col-span-8) --}}
+            <div class="lg:col-span-8 flex flex-col h-full space-y-3">
+                
+                {{-- Map View Container with Base Real Image, Dynamic SVG Path, Markers, & Clickable Hotspots --}}
+                <div 
+                    id="interactive-map-canvas"
+                    class="map-container relative w-full h-[480px] sm:h-[540px] lg:h-full min-h-[460px] rounded-3xl border border-slate-200/80 bg-white overflow-hidden select-none shadow-sm flex-1">
                     
-                    {{-- Search Input --}}
-                    <div class="relative">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    {{-- Loading Skeleton Overlay --}}
+                    <div x-show="isLoading" class="absolute inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-2xs">
+                        <div class="flex items-center gap-2.5 rounded-full bg-white px-5 py-2.5 shadow-lg border border-slate-200 text-xs font-bold text-slate-800">
+                            <svg class="animate-spin h-4 w-4 text-[#05529E]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                             </svg>
+                            <span>Memuat denah dan jalur navigasi...</span>
                         </div>
-                        <input 
-                            type="text" 
-                            x-model="searchQuery"
-                            placeholder="Cari ruangan atau fasilitas..." 
-                            class="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-xs sm:text-[13px] text-slate-800 placeholder-slate-400 focus:border-[#152e4d] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#152e4d]/10 transition"
-                        />
+                    </div>
+
+                    {{-- Map Zoom & View Controls Overlay (Left) --}}
+                    <div class="absolute left-3.5 bottom-3.5 z-30 flex flex-col gap-1 bg-white/95 backdrop-blur-xs p-1 rounded-2xl shadow-lg border border-slate-200/80">
                         <button 
-                            x-show="searchQuery.length > 0" 
-                            @click="searchQuery = ''"
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            type="button" 
+                            @click="zoomIn()"
+                            title="Perbesar Peta"
+                            class="h-7 w-7 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-700 font-bold text-sm transition">
+                            +
+                        </button>
+                        <button 
+                            type="button" 
+                            @click="zoomOut()"
+                            title="Perkecil Peta"
+                            class="h-7 w-7 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-700 font-bold text-sm transition">
+                            −
+                        </button>
+                        <button 
+                            type="button" 
+                            @click="resetZoom()"
+                            title="Reset Tampilan"
+                            class="h-7 w-7 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-700 text-xs transition">
+                            ⊙
                         </button>
                     </div>
 
-                    {{-- Map View Container with Exact Map Graphic & Clickable Room Hotspots --}}
-                    <div class="relative w-full aspect-[16/10] sm:aspect-[16/9.5] rounded-2xl border border-slate-200/90 bg-[#ebf3f9] overflow-hidden select-none shadow-sm">
-                        
-                        {{-- Exact High Resolution Map Background --}}
+                    {{-- Zoom Wrapper Container --}}
+                    <div 
+                        class="absolute inset-0 transition-transform duration-300 origin-center"
+                        :style="`transform: scale(${mapScale});`"
+                    >
+                        {{-- 1. Base Real Map Image (Strictly Untouched) --}}
                         <img 
                             src="{{ asset('images/denah-map.png') }}" 
                             alt="Denah SMKN 2 Kota Mojokerto" 
-                            class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+                            class="map-image absolute inset-0 w-full h-full object-contain object-center pointer-events-none"
                         />
 
-                        {{-- Active Dynamic Route Overlay Path (When Route Search is Active) --}}
-                        <svg x-show="showRoute && currentRoutePath" class="absolute inset-0 w-full h-full pointer-events-none z-20">
-                            {{-- Route Shadow / Glow --}}
-                            <path :d="currentRoutePath" fill="none" stroke="#60a5fa" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
-                            {{-- Route Solid Line --}}
-                            <path :d="currentRoutePath" fill="none" stroke="#2563eb" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
-                            {{-- Start Circle --}}
-                            <circle cx="39%" cy="98%" r="6" fill="#ffffff" stroke="#2563eb" stroke-width="3" />
-                            {{-- Target Pin Circle --}}
-                            <circle cx="53%" cy="34%" r="9" fill="#ffffff" stroke="#2563eb" stroke-width="4" />
-                            <circle cx="53%" cy="34%" r="3.5" fill="#2563eb" />
+                        {{-- 2. Route SVG Layer (Dynamic Path Connecting Exact Coordinates) --}}
+                        <svg 
+                            x-show="showRoute && svgPathD" 
+                            viewBox="0 0 100 100" 
+                            preserveAspectRatio="none"
+                            class="route-layer absolute inset-0 w-full h-full pointer-events-none z-20 transition-all duration-300">
+                            
+                            {{-- Route Outer Glow / Halo --}}
+                            <path 
+                                :d="svgPathD" 
+                                fill="none" 
+                                stroke="#38bdf8" 
+                                stroke-width="3" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round" 
+                                opacity="0.6" 
+                            />
+                            {{-- Route Solid Navigation Line --}}
+                            <path 
+                                :d="svgPathD" 
+                                fill="none" 
+                                stroke="#0284c7" 
+                                stroke-width="1.4" 
+                                stroke-linecap="round" 
+                                stroke-linejoin="round" 
+                            />
                         </svg>
 
-                        {{-- Interactive Clickable Hotspots & Pins for EVERY Class & Room --}}
-                        <template x-for="item in filteredFacilities" :key="item.id">
-                            <button
-                                type="button"
-                                @click="selectFacility(item)"
-                                :style="`left: ${item.coords.x}%; top: ${item.coords.y}%;`"
-                                :class="selectedFacility && selectedFacility.id === item.id 
-                                    ? 'scale-125 z-30 ring-4 ring-sky-400 bg-[#152e4d] text-white shadow-xl' 
-                                    : 'scale-90 z-10 bg-white/95 text-[#152e4d] hover:scale-110 hover:bg-[#152e4d] hover:text-white shadow-md border border-slate-300'"
-                                class="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center h-5 w-5 sm:h-6 sm:w-6 rounded-full transition-all duration-200 group cursor-pointer"
-                                :title="item.nama"
-                            >
-                                <span class="text-[9px] sm:text-[10px] font-black" x-text="item.icon || '📍'"></span>
-                                
-                                {{-- Tooltip on Hover --}}
-                                <span class="absolute bottom-full mb-1.5 hidden group-hover:block whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[10px] font-semibold text-white shadow-lg z-40 pointer-events-none">
-                                    <span x-text="item.nama"></span>
-                                </span>
-                            </button>
-                        </template>
+                        {{-- 3. Dynamic Origin & Destination Markers --}}
+                        <div x-show="showRoute" class="marker-layer absolute inset-0 pointer-events-none z-25">
+                            {{-- Origin Start Marker --}}
+                            <template x-if="originPoint">
+                                <div 
+                                    :style="`left: ${originPoint.x}%; top: ${originPoint.y}%;`"
+                                    class="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                                    <div class="h-6 w-6 rounded-full bg-blue-500/30 animate-ping absolute"></div>
+                                    <div class="h-4 w-4 rounded-full bg-white border-2 border-[#05529E] shadow-xl relative z-10 flex items-center justify-center">
+                                        <div class="h-1.5 w-1.5 rounded-full bg-[#05529E]"></div>
+                                    </div>
+                                </div>
+                            </template>
 
-                    </div>
-
-                </div>
-
-                {{-- 3. Right Detail Panel: "Tujuan Anda" (lg:col-span-4) --}}
-                <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-100 p-5 space-y-4 flex flex-col justify-between min-h-[420px]">
-                    
-                    <div class="space-y-3.5">
-                        {{-- Top Pill Badge: "Tujuan Anda" --}}
-                        <div class="flex items-center justify-between">
-                            <span class="inline-flex items-center rounded-full bg-[#103b60] text-white px-3.5 py-1 text-xs font-bold tracking-wide shadow-sm">
-                                Tujuan Anda
-                            </span>
-                            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800" x-text="selectedFacility.kategori"></span>
+                            {{-- Destination Target Marker (Location Pin) --}}
+                            <template x-if="destPoint">
+                                <div 
+                                    :style="`left: ${destPoint.x}%; top: ${destPoint.y}%;`"
+                                    class="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center">
+                                    <div class="h-8 w-8 rounded-full bg-[#05529E] text-white shadow-2xl flex items-center justify-center border-2 border-white animate-bounce">
+                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="w-2 h-1 bg-slate-900/30 rounded-full blur-2xs mt-0.5"></div>
+                                </div>
+                            </template>
                         </div>
 
-                        {{-- Facility Title & Subtitle --}}
-                        <div>
-                            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" x-text="selectedFacility.nama"></h3>
-                            <p class="text-sm font-bold text-[#1d5fb3] mt-0.5" x-text="selectedFacility.lokasi"></p>
-                        </div>
-
-                        {{-- Room Visual Graphic Container (Persis Desain Kotak di Mockup) --}}
-                        <div class="rounded-2xl border border-slate-100 bg-[#edf5fc] p-3.5 shadow-inner space-y-2.5">
-                            {{-- Top Header Placeholder --}}
-                            <div class="h-4 rounded-md bg-white/70 w-full"></div>
-                            
-                            {{-- 4 Dark Navy Blocks --}}
-                            <div class="grid grid-cols-4 gap-2">
-                                <div class="h-9 rounded-lg bg-[#193a5e] shadow-sm flex items-center justify-center text-white text-[10px] font-bold">
-                                    <span x-text="selectedFacility.kategori.substring(0, 3).toUpperCase()"></span>
+                        {{-- 4. Interactive Clickable Transparent Hotspots for Each Room (No intrusive icons) --}}
+                        <div class="hotspot-layer absolute inset-0 z-15">
+                            <template x-for="room in filteredRooms" :key="room.id">
+                                <div 
+                                    @click="selectRoom(room)"
+                                    :style="getHotspotStyle(room)"
+                                    :class="getHotspotClass(room)"
+                                    class="absolute transition-all duration-150 cursor-pointer group"
+                                    :title="room.name"
+                                >
+                                    {{-- Tooltip on Hover --}}
+                                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center whitespace-nowrap rounded-lg bg-slate-900/95 backdrop-blur-xs px-2.5 py-1 text-[11px] font-semibold text-white shadow-xl z-40 pointer-events-none">
+                                        <span x-text="room.name"></span>
+                                        <span class="text-[9px] text-slate-300 font-normal" x-text="room.building_name"></span>
+                                    </div>
                                 </div>
-                                <div class="h-9 rounded-lg bg-[#193a5e] shadow-sm flex items-center justify-center text-white text-[10px] font-bold">
-                                    <span>SMK2</span>
-                                </div>
-                                <div class="h-9 rounded-lg bg-[#193a5e] shadow-sm flex items-center justify-center text-white text-[10px] font-bold">
-                                    <span>2.0</span>
-                                </div>
-                                <div class="h-9 rounded-lg bg-[#193a5e] shadow-sm flex items-center justify-center text-white text-[10px] font-bold">
-                                    <span>✦</span>
-                                </div>
-                            </div>
-                            
-                            {{-- 4 Light Blue Pill Bars --}}
-                            <div class="grid grid-cols-4 gap-2">
-                                <div class="h-3 rounded-full bg-[#9bc3ea]"></div>
-                                <div class="h-3 rounded-full bg-[#9bc3ea]"></div>
-                                <div class="h-3 rounded-full bg-[#9bc3ea]"></div>
-                                <div class="h-3 rounded-full bg-[#9bc3ea]"></div>
-                            </div>
-                        </div>
-
-                        {{-- Short Description --}}
-                        <p class="text-xs sm:text-[13px] text-slate-600 leading-relaxed font-normal" x-text="selectedFacility.deskripsi"></p>
-
-                        {{-- Info Details Table --}}
-                        <div class="border-t border-slate-100 pt-3 space-y-2 text-xs">
-                            <div class="flex items-start justify-between gap-2">
-                                <span class="text-slate-500 font-medium shrink-0 flex items-center gap-1.5">
-                                    <span>✦</span> Lokasi
-                                </span>
-                                <span class="text-slate-800 font-semibold text-right" x-text="selectedFacility.lokasi"></span>
-                            </div>
-                            <div class="flex items-start justify-between gap-2">
-                                <span class="text-slate-500 font-medium shrink-0 flex items-center gap-1.5">
-                                    <span>▣</span> Fungsi
-                                </span>
-                                <span class="text-slate-800 font-semibold text-right" x-text="selectedFacility.fungsi"></span>
-                            </div>
-                            <div class="flex items-start justify-between gap-2">
-                                <span class="text-slate-500 font-medium shrink-0 flex items-center gap-1.5">
-                                    <span>🕒</span> Jam Operasional
-                                </span>
-                                <span class="text-slate-800 font-semibold text-right" x-text="selectedFacility.jam_operasional"></span>
-                            </div>
+                            </template>
                         </div>
                     </div>
-
-                    {{-- CTA Button --}}
-                    <a href="#jurusan" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#103b60] hover:bg-[#1a56db] text-white py-2.5 px-4 text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all mt-2">
-                        <span>Lihat Fasilitas Lengkap</span>
-                        <span>→</span>
-                    </a>
 
                 </div>
 
             </div>
 
-            {{-- Bottom Row 1: "Cari rute ke ruangan" --}}
-            <div class="bg-white rounded-2xl border border-slate-100 p-4 sm:p-5 flex flex-col lg:flex-row items-center justify-between gap-4 shadow-sm">
+            {{-- 2. Right Detail & Chatbot Assistance Column (lg:col-span-4) --}}
+            <div class="lg:col-span-4 flex flex-col h-full space-y-3 justify-between">
                 
-                {{-- Title --}}
-                <div class="flex items-center gap-2 text-slate-900 font-bold text-sm shrink-0 w-full lg:w-auto">
-                    <span class="text-[#103b60]">✦</span>
-                    <span>Cari rute ke ruangan</span>
-                </div>
-
-                {{-- Dropdowns & Button --}}
-                <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1 max-w-2xl">
+                {{-- Room Detail Card --}}
+                <div class="bg-white rounded-3xl border border-slate-200/80 p-5 space-y-4 flex flex-col justify-between flex-1 shadow-sm">
                     
-                    {{-- Dari --}}
-                    <div class="w-full sm:w-1/2">
-                        <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Dari</label>
-                        <select x-model="routeFrom" class="w-full rounded-xl border border-slate-200 bg-white py-2 px-3 text-xs text-slate-800 focus:border-[#103b60] focus:outline-none shadow-sm">
-                            <template x-for="item in allFacilities" :key="item.id">
-                                <option :value="item.id" x-text="item.nama"></option>
-                            </template>
-                        </select>
-                    </div>
+                    <template x-if="selectedRoom">
+                        <div class="space-y-3.5">
+                            {{-- Top Pill Badge: "Tujuan Anda" --}}
+                            <div class="flex items-center justify-between">
+                                <span class="inline-flex items-center rounded-full bg-[#05529E] text-white px-3 py-1 text-[11px] font-bold tracking-wide shadow-xs">
+                                    Tujuan Anda
+                                </span>
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800" x-text="selectedRoom.category ? selectedRoom.category.name : 'Ruangan'"></span>
+                            </div>
 
-                    {{-- Tujuan --}}
-                    <div class="w-full sm:w-1/2">
-                        <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tujuan</label>
-                        <select x-model="routeTo" class="w-full rounded-xl border border-slate-200 bg-white py-2 px-3 text-xs text-slate-800 focus:border-[#103b60] focus:outline-none shadow-sm">
-                            <template x-for="item in allFacilities" :key="item.id">
-                                <option :value="item.id" x-text="item.nama"></option>
-                            </template>
-                        </select>
-                    </div>
+                            {{-- Room Title & Subtitle --}}
+                            <div>
+                                <h3 class="text-xl font-black text-slate-900 tracking-tight leading-snug" x-text="selectedRoom.name"></h3>
+                                <p class="text-xs font-bold text-[#05529E] mt-0.5" x-text="selectedRoom.building_name || 'SMKN 2 Mojokerto'"></p>
+                            </div>
 
-                    {{-- Tampilkan Rute Button --}}
-                    <div class="w-full sm:w-auto self-end">
+                            {{-- Photo / Visual Preview Card --}}
+                            <div class="relative w-full h-32 rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-inner group">
+                                <img 
+                                    :src="selectedRoom.image ? ('/storage/' + selectedRoom.image.replace(/^storage\//, '')) : '{{ asset('images/hero-bg.jpg') }}'" 
+                                    :alt="selectedRoom.name"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                                    onerror="this.src='{{ asset('images/hero-bg.jpg') }}'"
+                                />
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between text-white text-[10px] font-bold">
+                                    <span x-text="selectedRoom.building_name || 'Gedung Sekolah'"></span>
+                                    <span class="bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded-full">SKANEDA</span>
+                                </div>
+                            </div>
+
+                            {{-- Short Description --}}
+                            <p class="text-xs text-slate-600 leading-relaxed font-normal" x-text="selectedRoom.description || 'Fasilitas pembelajaran resmi pada lingkungan SMK Negeri 2 Kota Mojokerto.'"></p>
+
+                            {{-- Meta Details --}}
+                            <div class="border-t border-slate-100 pt-3 space-y-2 text-xs">
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-slate-500 font-medium shrink-0 flex items-center gap-1.5">
+                                        <span>❖</span> Lokasi
+                                    </span>
+                                    <span class="text-slate-800 font-semibold text-right" x-text="selectedRoom.building_name || '-'"></span>
+                                </div>
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-slate-500 font-medium shrink-0 flex items-center gap-1.5">
+                                        <span>▣</span> Kategori
+                                    </span>
+                                    <span class="text-slate-800 font-semibold text-right" x-text="selectedRoom.category ? selectedRoom.category.name : 'Ruangan'"></span>
+                                </div>
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-slate-500 font-medium shrink-0 flex items-center gap-1.5">
+                                        <span>🕒</span> Jam Operasional
+                                    </span>
+                                    <span class="text-slate-800 font-semibold text-right" x-text="selectedRoom.open_hours || '07.00 - 16.00 WIB'"></span>
+                                </div>
+                            </div>
+
+                            {{-- Facilities Chips --}}
+                            <div x-show="selectedRoom.facilities && selectedRoom.facilities.length > 0" class="pt-1">
+                                <p class="text-[11px] font-bold text-slate-700 mb-1.5">Fasilitas:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    <template x-for="fac in selectedRoom.facilities" :key="fac.id">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200">
+                                            <span x-text="fac.name"></span>
+                                        </span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    {{-- Empty State (No Room Selected) --}}
+                    <template x-if="!selectedRoom">
+                        <div class="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-3">
+                            <div class="h-12 w-12 rounded-full bg-sky-50 text-sky-600 flex items-center justify-center text-xl">
+                                🗺️
+                            </div>
+                            <p class="font-bold text-slate-800 text-sm">Pilih Ruangan</p>
+                            <p class="text-xs text-slate-500 leading-relaxed">
+                                Silakan klik ruangan pada denah atau gunakan pencarian untuk melihat detail informasi.
+                            </p>
+                        </div>
+                    </template>
+
+                    {{-- Dynamic Routing Action Buttons --}}
+                    <div class="pt-2 space-y-2">
                         <button 
-                            type="button" 
-                            @click="calculateRoute()" 
-                            class="w-full sm:w-auto whitespace-nowrap rounded-xl bg-[#103b60] hover:bg-[#1a56db] text-white px-5 py-2 text-xs font-bold shadow-md hover:shadow-lg transition">
-                            Tampilkan Rute
+                            type="button"
+                            x-show="selectedRoom"
+                            @click="handleNavigateToSelected()"
+                            class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#05529E] hover:bg-[#0766c6] text-white py-2.5 px-4 text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer">
+                            <span>Arahkan Rute ke Sini</span>
+                            <span>→</span>
+                        </button>
+
+                        <button 
+                            type="button"
+                            x-show="selectedRoom"
+                            @click="setAsOrigin(selectedRoom.slug || selectedRoom.id)"
+                            class="w-full inline-flex items-center justify-center gap-1.5 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-700 py-1.5 px-3 text-[11px] font-semibold transition cursor-pointer">
+                            <span>● Mulai Rute dari Sini</span>
                         </button>
                     </div>
 
                 </div>
 
-                {{-- Route Stats Info --}}
-                <div x-show="showRoute" class="text-xs text-slate-600 bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-100 shadow-sm shrink-0">
-                    <p class="font-bold text-[#103b60]" x-text="routeStatsTitle"></p>
-                    <p class="text-[11px] text-slate-500" x-text="routeStatsTime"></p>
+                {{-- Chatbot Assistance Promo Card --}}
+                <div class="bg-white border border-slate-200/80 rounded-3xl p-4 text-xs text-slate-800 flex items-center justify-between gap-3 shadow-sm">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-1.5 font-bold text-slate-900">
+                            <span class="text-[#05529E]">💬</span>
+                            <span>Butuh bantuan navigasi?</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600">
+                            Tanyakan ruangan atau rute langsung kepada SADA AI.
+                        </p>
+                    </div>
+                    <button 
+                        type="button" 
+                        onclick="toggleChatbot()"
+                        class="shrink-0 text-center py-2 px-3.5 rounded-2xl bg-[#05529E] hover:bg-[#0766c6] text-white font-bold text-xs transition shadow-sm cursor-pointer">
+                        Tanya Chatbot
+                    </button>
                 </div>
 
             </div>
 
-            {{-- Bottom Row 2: Baris Chip Cepat Fasilitas Populer (Persis Mockup) --}}
-            <div class="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
-                <template x-for="chip in quickChips" :key="chip.id">
+        </div>
+
+        {{-- Bottom Row 1: Dynamic Route Selector Bar --}}
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 flex flex-col lg:flex-row items-center justify-between gap-4 shadow-sm">
+            
+            {{-- Title --}}
+            <div class="flex items-center gap-2 text-slate-900 font-bold text-sm shrink-0 w-full lg:w-auto">
+                <span class="text-[#05529E] text-base">✦</span>
+                <span>Cari rute ke ruangan</span>
+            </div>
+
+            {{-- Dynamic Dari & Tujuan Dropdowns & Action Button --}}
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto flex-1 max-w-3xl">
+                
+                {{-- Dari (Origin) --}}
+                <div class="w-full sm:w-1/2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Dari</label>
+                    <div class="relative">
+                        <select 
+                            x-model="routeFrom" 
+                            @change="onOriginOrDestChange()"
+                            class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-3 pr-8 text-xs text-slate-800 focus:border-[#05529E] focus:outline-none shadow-xs cursor-pointer">
+                            <option value="" disabled>-- Pilih Lokasi Asal --</option>
+                            <template x-for="r in allRooms" :key="'from-' + r.id">
+                                <option :value="r.slug || r.id" x-text="r.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Tujuan (Destination) --}}
+                <div class="w-full sm:w-1/2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tujuan</label>
+                    <div class="relative">
+                        <select 
+                            x-model="routeTo" 
+                            @change="onOriginOrDestChange()"
+                            class="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pl-3 pr-8 text-xs text-slate-800 focus:border-[#05529E] focus:outline-none shadow-xs cursor-pointer">
+                            <option value="" disabled>-- Pilih Lokasi Tujuan --</option>
+                            <template x-for="r in allRooms" :key="'to-' + r.id">
+                                <option :value="r.slug || r.id" x-text="r.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Tampilkan Rute Button --}}
+                <div class="w-full sm:w-auto self-end flex gap-2">
+                    <button 
+                        type="button" 
+                        @click="fetchRoute()" 
+                        :disabled="isRouteLoading || !routeFrom || !routeTo"
+                        class="w-full sm:w-auto whitespace-nowrap rounded-2xl bg-[#05529E] hover:bg-[#0766c6] disabled:opacity-50 text-white px-5 py-2.5 text-xs font-bold shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-center gap-1.5">
+                        <span x-show="isRouteLoading" class="animate-spin text-xs">⏳</span>
+                        <span x-text="isRouteLoading ? 'Menghitung...' : '➔ Tampilkan Rute'"></span>
+                    </button>
+
                     <button 
                         type="button"
-                        @click="selectFacilityById(chip.id)"
-                        :class="selectedFacility && selectedFacility.id === chip.id 
-                            ? 'bg-[#ebf4fd] border-[#b9d9f9] text-[#103b60] font-bold' 
-                            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold'"
-                        class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs shadow-sm transition whitespace-nowrap">
-                        <span x-text="chip.icon"></span>
-                        <span x-text="chip.name"></span>
+                        x-show="showRoute"
+                        @click="cancelRoute()"
+                        class="whitespace-nowrap rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-4 py-2.5 text-xs font-bold transition cursor-pointer">
+                        Batalkan Rute
                     </button>
-                </template>
+                </div>
+
+            </div>
+
+            {{-- Route Stats Info --}}
+            <div x-show="showRoute && routeInfo" class="text-xs text-slate-700 bg-sky-50 px-4 py-2.5 rounded-2xl border border-sky-200 shadow-2xs shrink-0 flex items-center gap-2.5">
+                <span class="text-lg">🚶</span>
+                <div>
+                    <p class="font-bold text-[#05529E]" x-text="`Jarak: ± ${routeInfo.distance} meter`"></p>
+                    <p class="text-[11px] text-slate-500" x-text="`Estimasi waktu: ± ${routeInfo.estimated_minutes} menit`"></p>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- Bottom Row 2: Popular Facilities Quick Access Bar --}}
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <template x-for="r in popularRooms" :key="'chip-' + r.id">
                 <button 
                     type="button"
-                    @click="setCategory('Semua')"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-[#103b60] hover:text-[#1a56db] transition whitespace-nowrap">
-                    <span>⋯ Lainnya</span>
-                    <span>→</span>
+                    @click="selectRoom(r)"
+                    :class="selectedRoom && selectedRoom.id === r.id 
+                        ? 'bg-[#ebf4fd] border-[#b9d9f9] text-[#05529E] font-bold ring-1 ring-sky-300' 
+                        : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold'"
+                    class="inline-flex items-center px-4 py-2 rounded-2xl border text-xs shadow-2xs transition whitespace-nowrap cursor-pointer">
+                    <span x-text="r.name"></span>
                 </button>
-            </div>
-
-            {{-- Bottom Row 3: Help Note Footer --}}
-            <div class="pt-2 text-center text-xs text-slate-500 font-medium">
-                Butuh bantuan menemukan lokasi? Kami siap membantumu menemukan ruang atau fasilitas yang kamu cari.
-            </div>
-
+            </template>
+            <button 
+                type="button"
+                @click="setCategory('Semua')"
+                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold text-[#05529E] hover:text-[#0766c6] transition whitespace-nowrap cursor-pointer">
+                <span>Lainnya</span>
+                <span>→</span>
+            </button>
         </div>
 
     </div>
 </section>
 
-{{-- Alpine.js State Logic for Interactive Map --}}
+{{-- Alpine.js Dynamic Live Routing Engine --}}
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('denahInteraktif', () => ({
+        Alpine.data('denahInteraktifApp', () => ({
+            allRooms: [],
+            categories: [],
             activeCategory: 'Semua',
+            selectedRoom: null,
             searchQuery: '',
-            routeFrom: 'gerbang_utama',
-            routeTo: 'lab_rpl_1',
-            showRoute: true,
-            routeStatsTitle: '✦ Jarak: ± 45 meter',
-            routeStatsTime: 'Estimasi waktu: 1 menit',
-            currentRoutePath: 'M 390 530 Q 380 430 460 410 T 530 240',
+            searchResults: [],
+            showSearchDropdown: false,
 
-            categories: [
-                { name: 'Semua', icon: '⊞' },
-                { name: 'Kelas', icon: '🏠' },
-                { name: 'Lab', icon: '💻' },
-                { name: 'Fasilitas', icon: '🏛️' },
-                { name: 'Kantor', icon: '🏢' },
-                { name: 'Lapangan', icon: '⚽' },
-                { name: 'Lainnya', icon: '⋯' }
-            ],
+            // Dynamic Route State
+            routeFrom: '',
+            routeTo: '',
+            showRoute: false,
+            routeInfo: null,
+            svgPathD: '',
+            originPoint: null,
+            destPoint: null,
 
-            quickChips: [
-                { id: 'lab_rpl_1', name: 'Lab Komputer (RPL)', icon: '▣' },
-                { id: 'perpustakaan', name: 'Perpustakaan', icon: '📚' },
-                { id: 'kantin', name: 'Kantin', icon: '🔵' },
-                { id: 'lapangan', name: 'Lapangan', icon: '🔵' },
-                { id: 'musholla', name: 'Mushola', icon: '🏠' },
-                { id: 'uks', name: 'UKS', icon: '➕' }
-            ],
+            // Zoom State
+            mapScale: 1.0,
 
-            allFacilities: [
-                // 1. LABS & SPECIAL ROOMS
-                {
-                    id: 'lab_rpl_1',
-                    nama: 'Laboratorium RPL 1',
-                    kategori: 'Lab',
-                    icon: '💻',
-                    coords: { x: 50.5, y: 34 },
-                    deskripsi: 'Laboratorium praktik untuk siswa jurusan RPL. Digunakan untuk pembelajaran pemrograman, pengembangan web, dan jaringan.',
-                    lokasi: 'Gedung B (RPL)',
-                    fungsi: 'Laboratorium Komputer',
-                    jam_operasional: '07.00 - 16.00 WIB'
-                },
-                {
-                    id: 'lab_rpl_2',
-                    nama: 'Laboratorium RPL 2',
-                    kategori: 'Lab',
-                    icon: '💻',
-                    coords: { x: 59.5, y: 34 },
-                    deskripsi: 'Laboratorium komputer lanjutan untuk pengembangan aplikasi mobile, database, dan project-based learning.',
-                    lokasi: 'Lantai 2 - Gedung B',
-                    fungsi: 'Laboratorium Komputer & RPL',
-                    jam_operasional: '07.00 - 16.00 WIB'
-                },
-                {
-                    id: 'aula',
-                    nama: 'Aula Serbaguna',
-                    kategori: 'Fasilitas',
-                    icon: '🏛️',
-                    coords: { x: 55, y: 40 },
-                    deskripsi: 'Ruang pertemuan akbar untuk seminar, workshop industri, dan kegiatan pertemuan guru serta wali murid.',
-                    lokasi: 'Lantai 1 - Gedung B',
-                    fungsi: 'Pertemuan & Seminar',
-                    jam_operasional: '07.00 - 17.00 WIB'
-                },
-                {
-                    id: 'lab_kuliner',
-                    nama: 'Lab Food & Kuliner (Tata Boga)',
-                    kategori: 'Lab',
-                    icon: '🍳',
-                    coords: { x: 67.5, y: 53 },
-                    deskripsi: 'Kitchen lab berstandar hotel berbintang untuk praktik memasak masakan nusantara, continental, bakery, dan pastry.',
-                    lokasi: 'Gedung Kuliner Timur',
-                    fungsi: 'Praktik Memasak & Tata Boga',
-                    jam_operasional: '07.00 - 16.00 WIB'
-                },
-                {
-                    id: 'lab_dkv',
-                    nama: 'Studio Multimedia & Lab DKV',
-                    kategori: 'Lab',
-                    icon: '🎨',
-                    coords: { x: 71.5, y: 53 },
-                    deskripsi: 'Studio fotografi, podcast, editing video, dan animasi digital dengan perangkat PC spesifikasi tinggi.',
-                    lokasi: 'Gedung DKV Timur',
-                    fungsi: 'Desain Grafis & Multimedia',
-                    jam_operasional: '07.00 - 16.00 WIB'
-                },
-                {
-                    id: 'perpustakaan',
-                    nama: 'Perpustakaan Sekolah',
-                    kategori: 'Fasilitas',
-                    icon: '📚',
-                    coords: { x: 63.5, y: 53 },
-                    deskripsi: 'Pusat literasi sekolah dengan ribuan koleksi buku referensi kejuruan, fiksi, dan ruang baca ber-AC.',
-                    lokasi: 'Gedung Sayap Timur',
-                    fungsi: 'Literasi & Peminjaman Buku',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'uks',
-                    nama: 'Ruang UKS',
-                    kategori: 'Fasilitas',
-                    icon: '➕',
-                    coords: { x: 67, y: 69 },
-                    deskripsi: 'Unit Kesehatan Sekolah untuk penanganan medis awal, konsultasi gizi, dan istirahat siswa.',
-                    lokasi: 'Gedung Layanan Siswa',
-                    fungsi: 'Layanan Kesehatan',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'bk',
-                    nama: 'Ruang Bimbingan Konseling (BK)',
-                    kategori: 'Kantor',
-                    icon: '👥',
-                    coords: { x: 75, y: 64 },
-                    deskripsi: 'Ruang bimbingan konseling karir, pengembangan potensi, dan konsultasi kepribadian peserta didik.',
-                    lokasi: 'Gedung Sayap Timur',
-                    fungsi: 'Konseling & Bimbingan',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
+            isLoading: true,
+            isRouteLoading: false,
 
-                // 2. KELAS SAYAP UTARA (ATAS)
-                {
-                    id: 'kelas_xi_kul_3',
-                    nama: 'Kelas XI Kuliner 3',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 48, y: 15 },
-                    deskripsi: 'Ruang kelas teori untuk siswa kompetensi keahlian Kuliner tingkat XI.',
-                    lokasi: 'Lantai 2 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xi_kul_2',
-                    nama: 'Kelas XI Kuliner 2',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 51.5, y: 15 },
-                    deskripsi: 'Ruang kelas teori untuk siswa kompetensi keahlian Kuliner tingkat XI.',
-                    lokasi: 'Lantai 2 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xi_kul_1',
-                    nama: 'Kelas XI Kuliner 1',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 55, y: 15 },
-                    deskripsi: 'Ruang kelas teori untuk siswa kompetensi keahlian Kuliner tingkat XI.',
-                    lokasi: 'Lantai 2 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xi_rpl_3',
-                    nama: 'Kelas XI RPL 3',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 58.5, y: 15 },
-                    deskripsi: 'Ruang kelas teori untuk siswa jurusan Rekayasa Perangkat Lunak tingkat XI.',
-                    lokasi: 'Lantai 2 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xi_rpl_2',
-                    nama: 'Kelas XI RPL 2',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 62, y: 15 },
-                    deskripsi: 'Ruang kelas teori untuk siswa jurusan Rekayasa Perangkat Lunak tingkat XI.',
-                    lokasi: 'Lantai 2 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xi_rpl_1',
-                    nama: 'Kelas XI RPL 1',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 65.5, y: 15 },
-                    deskripsi: 'Ruang kelas teori untuk siswa jurusan Rekayasa Perangkat Lunak tingkat XI.',
-                    lokasi: 'Lantai 2 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xii_kul_3',
-                    nama: 'Kelas XII Kuliner 3',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 48, y: 24 },
-                    deskripsi: 'Ruang kelas teori untuk siswa tingkat akhir Kuliner.',
-                    lokasi: 'Lantai 1 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xii_kul_12',
-                    nama: 'Kelas XII Kuliner 1 & 2',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 52.5, y: 24 },
-                    deskripsi: 'Ruang kelas teori siswa tingkat XII Kuliner.',
-                    lokasi: 'Lantai 1 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xi_lps_1',
-                    nama: 'Kelas XI Layanan Perbankan 1',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 56.5, y: 24 },
-                    deskripsi: 'Ruang kelas teori program keahlian Layanan Perbankan Syariah.',
-                    lokasi: 'Lantai 1 - Gedung Utara',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
+            async initData() {
+                this.isLoading = true;
+                try {
+                    // 1. Fetch Categories from API
+                    const catRes = await fetch('/api/v1/public/map/categories');
+                    const catData = await catRes.json();
+                    if (catData.success) {
+                        this.categories = catData.data || [];
+                    }
 
-                // 3. KELAS KORIDOR TENGAH & BARAT
-                {
-                    id: 'kelas_xii_lps_2',
-                    nama: 'Kelas XII Layanan Perbankan 2',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 26.5, y: 56 },
-                    deskripsi: 'Ruang kelas teori siswa tingkat XII Layanan Perbankan Syariah.',
-                    lokasi: 'Lantai 2 - Gedung Sayap Barat',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_xii_lps_1_barat',
-                    nama: 'Kelas XII Layanan Perbankan 1',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 26.5, y: 69 },
-                    deskripsi: 'Ruang kelas teori siswa tingkat XII Layanan Perbankan Syariah.',
-                    lokasi: 'Lantai 1 - Gedung Sayap Barat',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_x_rpl_1',
-                    nama: 'Kelas X RPL 1',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 44, y: 57 },
-                    deskripsi: 'Ruang kelas dasar pemrograman dan fondasi informatika untuk siswa baru jurusan RPL.',
-                    lokasi: 'Koridor Tengah',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_x_rpl_2',
-                    nama: 'Kelas X RPL 2',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 44, y: 68 },
-                    deskripsi: 'Ruang kelas pembelajaran teori dan komputasi dasar tingkat X RPL.',
-                    lokasi: 'Koridor Tengah',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'kelas_x_rpl_3',
-                    nama: 'Kelas X RPL 3',
-                    kategori: 'Kelas',
-                    icon: '🏫',
-                    coords: { x: 44, y: 78 },
-                    deskripsi: 'Ruang kelas pembelajaran teori dan komputasi dasar tingkat X RPL.',
-                    lokasi: 'Koridor Tengah',
-                    fungsi: 'Ruang Belajar Teori',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
+                    // 2. Fetch Rooms from API
+                    const roomRes = await fetch('/api/v1/public/rooms');
+                    const roomData = await roomRes.json();
+                    if (roomData.success) {
+                        this.allRooms = roomData.data || [];
+                        
+                        // Default selection: Lapangan Olahraga / Lab RPL
+                        const defaultDest = this.allRooms.find(r => r.slug.includes('lapangan') || r.slug.includes('rpl')) || this.allRooms[0];
+                        if (defaultDest) {
+                            this.selectedRoom = defaultDest;
+                            this.routeTo = defaultDest.slug || defaultDest.id;
+                        }
 
-                // 4. KANTOR, IBADAH, LAPANGAN, PARKIRAN, GERBANG
-                {
-                    id: 'kantor_utama',
-                    nama: 'Kantor Kepala Sekolah & Tata Usaha',
-                    kategori: 'Kantor',
-                    icon: '🏢',
-                    coords: { x: 37, y: 84 },
-                    deskripsi: 'Pusat administrasi sekolah, ruang kerja kepala sekolah, staf tata usaha, dan ruang penerimaan tamu.',
-                    lokasi: 'Lantai 1 - Gedung Utama',
-                    fungsi: 'Administrasi & Manajemen',
-                    jam_operasional: '07.00 - 15.30 WIB'
-                },
-                {
-                    id: 'bkk',
-                    nama: 'BKK / Koperasi / Mini Bank',
-                    kategori: 'Kantor',
-                    icon: '💼',
-                    coords: { x: 27, y: 88 },
-                    deskripsi: 'Bursa Kerja Khusus (BKK) untuk penyaluran lulusan ke dunia kerja serta laboratorium Mini Bank.',
-                    lokasi: 'Depan Sayap Kiri',
-                    fungsi: 'Layanan Kerja & Perbankan',
-                    jam_operasional: '07.30 - 15.00 WIB'
-                },
-                {
-                    id: 'musholla',
-                    nama: 'Musholla Al-Ikhlas',
-                    kategori: 'Fasilitas',
-                    icon: '🕌',
-                    coords: { x: 55, y: 82 },
-                    deskripsi: 'Sarana ibadah sholat berjamaah lima waktu, sholat dhuha bersama, dan kegiatan keagamaan.',
-                    lokasi: 'Area Tengah Kampus',
-                    fungsi: 'Sarana Ibadah',
-                    jam_operasional: '06.00 - 17.30 WIB'
-                },
-                {
-                    id: 'lapangan',
-                    nama: 'Lapangan Olahraga & Upacara',
-                    kategori: 'Lapangan',
-                    icon: '⚽',
-                    coords: { x: 80, y: 34 },
-                    deskripsi: 'Lapangan olahraga serbaguna untuk upacara bendera, senam, bola basket, futsal, dan voli.',
-                    lokasi: 'Sisi Timur Kampus',
-                    fungsi: 'Olahraga & Kegiatan Luar',
-                    jam_operasional: '06.30 - 17.30 WIB'
-                },
-                {
-                    id: 'parkiran',
-                    nama: 'Area Parkiran',
-                    kategori: 'Fasilitas',
-                    icon: '🅿️',
-                    coords: { x: 13, y: 50 },
-                    deskripsi: 'Area parkir kendaraan roda dua dan roda empat yang aman dan tertata rapi.',
-                    lokasi: 'Sisi Barat Kampus',
-                    fungsi: 'Parkir Kendaraan',
-                    jam_operasional: '06.00 - 18.00 WIB'
-                },
-                {
-                    id: 'gerbang_utama',
-                    nama: 'Gerbang Utama & Pos Satpam',
-                    kategori: 'Fasilitas',
-                    icon: '🚪',
-                    coords: { x: 39, y: 96 },
-                    deskripsi: 'Akses gerbang utama keluar masuk warga sekolah dan tamu dengan penjagaan satpam 24 jam.',
-                    lokasi: 'Pintu Depan - Jl. Raya Pulorejo',
-                    fungsi: 'Keamanan & Pintu Masuk',
-                    jam_operasional: '24 Jam'
-                },
-                {
-                    id: 'kantin',
-                    nama: 'Kantin Sehat Sekolah',
-                    kategori: 'Fasilitas',
-                    icon: '🍽️',
-                    coords: { x: 74, y: 86 },
-                    deskripsi: 'Kantin sekolah yang menyediakan aneka makanan dan minuman bersih, sehat, dan bergizi.',
-                    lokasi: 'Sisi Tenggara Kampus',
-                    fungsi: 'Kantin & Makanan',
-                    jam_operasional: '06.30 - 16.00 WIB'
+                        // Default origin: Gerbang Utama
+                        const defaultOrigin = this.allRooms.find(r => r.slug.includes('gerbang')) || this.allRooms[0];
+                        if (defaultOrigin) {
+                            this.routeFrom = defaultOrigin.slug || defaultOrigin.id;
+                        }
+
+                        // Initial demonstration route
+                        if (this.routeFrom && this.routeTo && this.routeFrom !== this.routeTo) {
+                            this.fetchRoute();
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading denah data:', err);
+                } finally {
+                    this.isLoading = false;
                 }
-            ],
 
-            selectedFacility: null,
+                // Global event listeners for Chatbot integration
+                window.addEventListener('sada:select-room', (e) => {
+                    if (e.detail && e.detail.slug) {
+                        this.selectRoomBySlug(e.detail.slug);
+                    }
+                });
 
-            init() {
-                this.selectedFacility = this.allFacilities[0];
-            },
-
-            setCategory(cat) {
-                this.activeCategory = cat;
-            },
-
-            selectFacility(facility) {
-                this.selectedFacility = facility;
-                this.routeTo = facility.id;
-                this.updateRoute();
-            },
-
-            selectFacilityById(id) {
-                const found = this.allFacilities.find(f => f.id === id);
-                if (found) {
-                    this.selectFacility(found);
-                }
-            },
-
-            get filteredFacilities() {
-                return this.allFacilities.filter(f => {
-                    const matchCategory = this.activeCategory === 'Semua' || f.kategori === this.activeCategory;
-                    const matchSearch = this.searchQuery === '' || f.nama.toLowerCase().includes(this.searchQuery.toLowerCase()) || f.lokasi.toLowerCase().includes(this.searchQuery.toLowerCase());
-                    return matchCategory && matchSearch;
+                window.addEventListener('sada:show-route', (e) => {
+                    if (e.detail && e.detail.from && e.detail.to) {
+                        this.routeFrom = e.detail.from;
+                        this.routeTo = e.detail.to;
+                        this.fetchRoute();
+                    }
                 });
             },
 
-            calculateRoute() {
-                const found = this.allFacilities.find(f => f.id === this.routeTo);
-                if (found) {
-                    this.selectedFacility = found;
-                }
-                this.updateRoute();
+            get filteredRooms() {
+                return this.allRooms.filter(r => {
+                    if (this.activeCategory === 'Semua') return true;
+                    return r.category && r.category.name.toLowerCase() === this.activeCategory.toLowerCase();
+                });
             },
 
-            updateRoute() {
-                this.showRoute = true;
-                const from = this.allFacilities.find(f => f.id === this.routeFrom) || this.allFacilities[this.allFacilities.length - 2];
-                const to = this.selectedFacility || this.allFacilities[0];
+            get popularRooms() {
+                return this.allRooms.slice(0, 6);
+            },
 
-                const fx = from.coords.x * 9;
-                const fy = from.coords.y * 6.2;
-                const tx = to.coords.x * 9;
-                const ty = to.coords.y * 6.2;
+            setCategory(name) {
+                this.activeCategory = name;
+            },
 
-                const midX = (fx + tx) / 2 + (tx > fx ? 30 : -30);
-                const midY = (fy + ty) / 2;
-                this.currentRoutePath = `M ${fx} ${fy} Q ${midX} ${midY} ${tx} ${ty}`;
+            async selectRoom(room) {
+                this.selectedRoom = room;
+                this.routeTo = room.slug || room.id;
 
-                const distPx = Math.sqrt((tx - fx) * (tx - fx) + (ty - fy) * (ty - fy));
-                const distMeters = Math.max(15, Math.round(distPx * 0.12));
-                const mins = Math.max(1, Math.round(distMeters / 40));
+                try {
+                    const res = await fetch(`/api/v1/public/rooms/${encodeURIComponent(room.slug || room.id)}`);
+                    const data = await res.json();
+                    if (data.success && data.data) {
+                        this.selectedRoom = data.data;
+                    }
+                } catch (e) {
+                    console.error('Error fetching room detail:', e);
+                }
+            },
 
-                this.routeStatsTitle = `✦ Jarak: ± ${distMeters} meter`;
-                this.routeStatsTime = `Estimasi waktu: ${mins} menit`;
+            selectRoomBySlug(slug) {
+                const found = this.allRooms.find(r => r.slug === slug || r.id == slug);
+                if (found) {
+                    this.selectRoom(found);
+                    const el = document.getElementById('denah');
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            },
+
+            setAsOrigin(slugOrId) {
+                this.routeFrom = slugOrId;
+                if (this.routeFrom && this.routeTo && this.routeFrom !== this.routeTo) {
+                    this.fetchRoute();
+                }
+            },
+
+            handleNavigateToSelected() {
+                if (!this.selectedRoom) return;
+                this.routeTo = this.selectedRoom.slug || this.selectedRoom.id;
+
+                // If origin is not yet set, prompt or fallback to Gerbang
+                if (!this.routeFrom) {
+                    const gate = this.allRooms.find(r => r.slug.includes('gerbang')) || this.allRooms[0];
+                    this.routeFrom = gate ? (gate.slug || gate.id) : '';
+                }
+
+                this.fetchRoute();
+            },
+
+            onOriginOrDestChange() {
+                // Clear active route visually until user hits "Tampilkan Rute"
+                this.showRoute = false;
+                this.svgPathD = '';
+                this.originPoint = null;
+                this.destPoint = null;
+                this.routeInfo = null;
+            },
+
+            async handleSearchInput() {
+                const q = this.searchQuery.trim();
+                if (q.length === 0) {
+                    this.searchResults = [];
+                    this.showSearchDropdown = false;
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/v1/public/rooms/search?q=${encodeURIComponent(q)}`);
+                    const data = await res.json();
+                    if (data.success && Array.isArray(data.data)) {
+                        this.searchResults = data.data;
+                        this.showSearchDropdown = true;
+                    }
+                } catch (e) {
+                    console.error('Search error:', e);
+                }
+            },
+
+            clearSearch() {
+                this.searchQuery = '';
+                this.searchResults = [];
+                this.showSearchDropdown = false;
+            },
+
+            async fetchRoute() {
+                if (!this.routeFrom || !this.routeTo) return;
+                if (this.routeFrom === this.routeTo) {
+                    alert('Lokasi asal dan tujuan tidak boleh sama.');
+                    return;
+                }
+
+                this.isRouteLoading = true;
+                try {
+                    const res = await fetch(`/api/v1/public/map/route?from=${encodeURIComponent(this.routeFrom)}&to=${encodeURIComponent(this.routeTo)}`);
+                    const data = await res.json();
+
+                    if (data.success && data.data) {
+                        const route = data.data;
+                        this.routeInfo = {
+                            distance: route.distance,
+                            estimated_minutes: route.estimated_minutes,
+                        };
+
+                        // Build dynamic path from waypoints
+                        if (route.path && route.path.length > 0) {
+                            this.svgPathD = this.buildCurvedSvgPath(route.path);
+                            this.originPoint = route.path[0];
+                            this.destPoint = route.path[route.path.length - 1];
+                            this.showRoute = true;
+                        }
+                    } else {
+                        alert(data.message || 'Rute tidak dapat ditemukan.');
+                        this.showRoute = false;
+                    }
+                } catch (e) {
+                    console.error('Route calculation error:', e);
+                } finally {
+                    this.isRouteLoading = false;
+                }
+            },
+
+            buildCurvedSvgPath(points) {
+                if (!points || points.length === 0) return '';
+                if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+
+                let d = `M ${points[0].x} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) {
+                    const p0 = points[i - 1];
+                    const p1 = points[i];
+                    
+                    // Smooth Quadratic Bezier curve between waypoints
+                    const midX = (p0.x + p1.x) / 2;
+                    const midY = (p0.y + p1.y) / 2;
+                    d += ` Q ${p0.x} ${p0.y} ${midX} ${midY} T ${p1.x} ${p1.y}`;
+                }
+                return d;
+            },
+
+            cancelRoute() {
+                this.showRoute = false;
+                this.svgPathD = '';
+                this.routeInfo = null;
+                this.originPoint = null;
+                this.destPoint = null;
+            },
+
+            zoomIn() {
+                if (this.mapScale < 2.0) this.mapScale += 0.2;
+            },
+
+            zoomOut() {
+                if (this.mapScale > 0.8) this.mapScale -= 0.2;
+            },
+
+            resetZoom() {
+                this.mapScale = 1.0;
+            },
+
+            getHotspotStyle(room) {
+                if (!room.hotspot) return 'display: none;';
+                return `left: ${room.hotspot.x}%; top: ${room.hotspot.y}%; width: ${room.hotspot.width}%; height: ${room.hotspot.height}%;`;
+            },
+
+            getHotspotClass(room) {
+                const isSelected = this.selectedRoom && (this.selectedRoom.id === room.id || this.selectedRoom.slug === room.slug);
+                if (isSelected) {
+                    return 'ring-2 ring-blue-600 bg-blue-600/30 rounded-md shadow-sm z-30';
+                }
+                return 'hover:bg-blue-400/25 hover:ring-2 hover:ring-blue-400/70 rounded-md transition-all z-10';
+            },
+
+            getCategoryIcon(slug) {
+                switch(slug) {
+                    case 'lab-bengkel': return '💻';
+                    case 'ruang-kelas': return '🏫';
+                    case 'fasilitas': return '🏛️';
+                    case 'kantor': return '🏢';
+                    case 'area-terbuka': return '⚽';
+                    default: return '📍';
+                }
+            },
+
+            getRoomBadge(room) {
+                if (room.category) {
+                    return this.getCategoryIcon(room.category.slug);
+                }
+                return '📍';
             }
         }));
     });

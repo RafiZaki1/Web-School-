@@ -27,4 +27,18 @@ class HomeController extends Controller
             abort(500, 'Gagal memuat halaman utama.');
         }
     }
+
+    public function denah(): View
+    {
+        try {
+            return view('denah', [
+                'home' => $this->homeService->getHomeData(),
+                'rooms' => $this->roomService->getActiveRooms(),
+            ]);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            abort(500, 'Gagal memuat halaman denah interaktif.');
+        }
+    }
 }
