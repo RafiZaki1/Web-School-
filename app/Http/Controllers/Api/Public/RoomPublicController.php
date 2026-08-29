@@ -93,4 +93,35 @@ class RoomPublicController extends Controller
             );
         }
     }
+
+    /**
+     * Search rooms by query keyword.
+     */
+    public function search(\Illuminate\Http\Request $request): JsonResponse
+    {
+        $query = $request->query('q');
+
+        if ($query === null || trim((string) $query) === '') {
+            return ApiResponse::error(
+                "Parameter pencarian 'q' wajib diisi.",
+                null,
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        try {
+            $rooms = $this->roomService->searchRooms((string) $query);
+
+            return ApiResponse::success(
+                RoomResource::collection($rooms),
+                'Rooms search results retrieved successfully'
+            );
+        } catch (Throwable $th) {
+            return ApiResponse::error(
+                'Failed to search rooms: ' . $th->getMessage(),
+                null,
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }

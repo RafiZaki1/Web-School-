@@ -4,19 +4,26 @@ namespace App\Providers;
 
 use App\Contracts\Interfaces\ChatbotServiceInterface;
 use App\Contracts\Interfaces\FileUploadServiceInterface;
+use App\Contracts\Interfaces\GalleryRepositoryInterface;
 use App\Contracts\Interfaces\GalleryServiceInterface;
+use App\Contracts\Interfaces\HeroRepositoryInterface;
 use App\Contracts\Interfaces\HeroServiceInterface;
 use App\Contracts\Interfaces\HomeServiceInterface;
-use App\Contracts\Interfaces\HeroRepositoryInterface;
-use App\Contracts\Interfaces\SchoolProfileServiceInterface;
-use App\Contracts\Interfaces\GalleryRepositoryInterface;
+use App\Contracts\Interfaces\MapRepositoryInterface;
+use App\Contracts\Interfaces\MapRoutingServiceInterface;
+use App\Contracts\Interfaces\MapServiceInterface;
+use App\Contracts\Interfaces\RoomCategoryRepositoryInterface;
+use App\Contracts\Interfaces\RoomCategoryServiceInterface;
 use App\Contracts\Interfaces\RoomRepositoryInterface;
 use App\Contracts\Interfaces\RoomServiceInterface;
 use App\Contracts\Interfaces\SchoolProfileRepositoryInterface;
-use App\Contracts\Interfaces\StatisticServiceInterface;
+use App\Contracts\Interfaces\SchoolProfileServiceInterface;
 use App\Contracts\Interfaces\StatisticRepositoryInterface;
+use App\Contracts\Interfaces\StatisticServiceInterface;
 use App\Contracts\Repositories\GalleryRepository;
 use App\Contracts\Repositories\HeroRepository;
+use App\Contracts\Repositories\MapRepository;
+use App\Contracts\Repositories\RoomCategoryRepository;
 use App\Contracts\Repositories\RoomRepository;
 use App\Contracts\Repositories\SchoolProfileRepository;
 use App\Contracts\Repositories\StatisticRepository;
@@ -25,6 +32,9 @@ use App\Services\LandingPage\FileUploadService;
 use App\Services\LandingPage\GalleryService;
 use App\Services\LandingPage\HeroService;
 use App\Services\LandingPage\HomeService;
+use App\Services\LandingPage\MapRoutingService;
+use App\Services\LandingPage\MapService;
+use App\Services\LandingPage\RoomCategoryService;
 use App\Services\LandingPage\RoomService;
 use App\Services\LandingPage\SchoolProfileService;
 use App\Services\LandingPage\StatisticService;
@@ -36,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
         HeroRepositoryInterface::class => HeroRepository::class,
         GalleryRepositoryInterface::class => GalleryRepository::class,
         RoomRepositoryInterface::class => RoomRepository::class,
+        RoomCategoryRepositoryInterface::class => RoomCategoryRepository::class,
+        MapRepositoryInterface::class => MapRepository::class,
         SchoolProfileRepositoryInterface::class => SchoolProfileRepository::class,
         StatisticRepositoryInterface::class => StatisticRepository::class,
 
@@ -43,6 +55,9 @@ class AppServiceProvider extends ServiceProvider
         GalleryServiceInterface::class => GalleryService::class,
         HomeServiceInterface::class => HomeService::class,
         RoomServiceInterface::class => RoomService::class,
+        RoomCategoryServiceInterface::class => RoomCategoryService::class,
+        MapServiceInterface::class => MapService::class,
+        MapRoutingServiceInterface::class => MapRoutingService::class,
         SchoolProfileServiceInterface::class => SchoolProfileService::class,
         StatisticServiceInterface::class => StatisticService::class,
         ChatbotServiceInterface::class => ChatbotService::class,

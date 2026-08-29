@@ -26,6 +26,21 @@ class RoomResource extends JsonResource
             'image' => $this->formatImageUrl($this->image),
             'open_hours' => $this->open_hours,
             'is_active' => (bool) $this->is_active,
+            'category' => $this->category ? [
+                'id' => $this->category->id,
+                'name' => $this->category->name,
+                'slug' => $this->category->slug,
+                'icon' => $this->category->icon,
+            ] : null,
+            'hotspot' => ($this->map_x !== null && $this->map_y !== null) ? [
+                'x' => (float) $this->map_x,
+                'y' => (float) $this->map_y,
+                'width' => (float) ($this->map_width ?? 0),
+                'height' => (float) ($this->map_height ?? 0),
+            ] : null,
+            'map_node_id' => $this->map_node_id,
+            'facilities' => FacilityResource::collection($this->whenLoaded('facilities')),
         ];
     }
 }
+

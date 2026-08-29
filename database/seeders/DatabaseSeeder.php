@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LandingPageSeeder::class,
             RoomSeeder::class,
+            InteractiveMapSeeder::class,
         ]);
     }
 }

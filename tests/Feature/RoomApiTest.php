@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Facility;
 use App\Models\Room;
+use App\Models\RoomCategory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,12 +12,23 @@ class RoomApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_list_all_active_rooms(): void
+    public function test_can_list_all_active_rooms_with_hotspot_and_category(): void
     {
+        $category = RoomCategory::create([
+            'name' => 'Lab Komputer',
+            'slug' => 'lab-komputer',
+            'is_active' => true,
+        ]);
+
         Room::create([
             'name' => 'Laboratorium RPL',
             'slug' => 'laboratorium-rpl',
             'building_name' => 'Gedung RPL',
+            'category_id' => $category->id,
+            'map_x' => 55.2,
+            'map_y' => 22.8,
+            'map_width' => 7.4,
+            'map_height' => 5.2,
             'is_active' => true,
         ]);
         Room::create([
@@ -40,7 +52,55 @@ class RoomApiTest extends TestCase
             ])
             ->assertJsonCount(2, 'data')
             ->assertJsonPath('data.0.name', 'Laboratorium RPL')
+            ->assertJsonPath('data.0.category.name', 'Lab Komputer')
+            ->assertJsonPath('data.0.hotspot.x', 55.2)
+            ->assertJsonPath('data.0.hotspot.y', 22.8)
             ->assertJsonPath('data.1.name', 'Perpustakaan');
+    }
+
+    public function test_can_search_rooms_by_name_slug_or_category(): void
+    {
+        $catLab = RoomCategory::create(['name' => 'Laboratorium', 'slug' => 'lab']);
+        $catClass = RoomCategory::create(['name' => 'Kelas', 'slug' => 'kelas']);
+
+        Room::create([
+            'name' => 'X RPL 1',
+            'slug' => 'x-rpl-1',
+            'building_name' => 'Gedung Barat',
+            'category_id' => $catClass->id,
+            'is_active' => true,
+        ]);
+        Room::create([
+            'name' => 'Lab RPL',
+            'slug' => 'lab-rpl',
+            'building_name' => 'Gedung Barat',
+            'category_id' => $catLab->id,
+            'is_active' => true,
+        ]);
+        Room::create([
+            'name' => 'Kantin',
+            'slug' => 'kantin',
+            'building_name' => 'Area Belakang',
+            'is_active' => true,
+        ]);
+
+        // Search by keyword "RPL"
+        $response = $this->getJson('/api/v1/public/rooms/search?q=RPL');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.name', 'X RPL 1')
+            ->assertJsonPath('data.1.name', 'Lab RPL');
+
+        // Search by category keyword "Laboratorium"
+        $responseCat = $this->getJson('/api/v1/public/rooms/search?q=Laboratorium');
+        $responseCat->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Lab RPL');
+
+        // Validation error on empty query
+        $responseEmpty = $this->getJson('/api/v1/public/rooms/search?q=');
+        $responseEmpty->assertStatus(422);
     }
 
     public function test_can_get_room_detail_by_id_or_slug(): void
@@ -51,6 +111,10 @@ class RoomApiTest extends TestCase
             'building_name' => 'Gedung RPL',
             'description' => 'Laboratorium praktik untuk siswa RPL',
             'open_hours' => '07:00 - 16:00 WIB',
+            'map_x' => 10.5,
+            'map_y' => 20.5,
+            'map_width' => 5.0,
+            'map_height' => 4.0,
             'is_active' => true,
         ]);
 
@@ -67,6 +131,12 @@ class RoomApiTest extends TestCase
                     'building_name' => 'Gedung RPL',
                     'description' => 'Laboratorium praktik untuk siswa RPL',
                     'open_hours' => '07:00 - 16:00 WIB',
+                    'hotspot' => [
+                        'x' => 10.5,
+                        'y' => 20.5,
+                        'width' => 5.0,
+                        'height' => 4.0,
+                    ],
                 ],
             ]);
 
