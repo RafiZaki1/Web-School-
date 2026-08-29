@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
@@ -101,7 +101,7 @@
                                 </svg>
                                 <span>Berita & Informasi</span>
                             </a>
-                            <a href="{{ route('denah') }}" @click="open = false" class="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-sky-50 hover:text-blue-700 transition">
+                            <a href="#denah" @click="open = false" class="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-sky-50 hover:text-blue-700 transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                 </svg>
@@ -904,6 +904,9 @@
                 </div>
             </div>
         </section>
+
+        {{-- ============ DENAH INTERAKTIF SEKOLAH ============ --}}
+        <x-denah-interaktif />
 
         {{-- ============ FOOTER (FULL WIDTH SEPERTI NAVBAR & TEKS WARNA PUTIH) ============ --}}
         <footer id="kontak" class="bg-gradient-to-b from-[#05529E] via-[#03315F] to-[#021D37] text-white">
