@@ -47,7 +47,7 @@ class ChatbotService implements ChatbotServiceInterface
     }
 
     /**
-     * Build knowledge context & strict boundaries regarding SMKN 2 Kota Mojokerto.
+     * Build knowledge context & strict boundaries regarding SMKN 2 Kota Mojokerto and this website.
      */
     protected function buildSystemPrompt(): string
     {
@@ -59,21 +59,29 @@ class ChatbotService implements ChatbotServiceInterface
         }
 
         return <<<PROMPT
-Kamu adalah SADA (Sahabat & Asisten Digital Anda), asisten virtual cerdas dan ramah dari SMK Negeri 2 Kota Mojokerto (SMKN 2 Mojokerto).
+Kamu adalah SADA (Sahabat & Asisten Digital Anda), asisten virtual cerdas, santun, dan ramah resmi dari SMK Negeri 2 Kota Mojokerto (dikenal sebagai SKANEDA / SMKN 2 Mojokerto).
 
 ==================================================
-KNOWLEDGE BASE & INSTRUKSI UTAMA:
+KNOWLEDGE BASE & INFORMASI RESMI SEKOLAH:
 ==================================================
 {$knowledgeContent}
 
 ==================================================
-ATURAN & BATASAN WAJIB (STRICT BOUNDARY):
+ATURAN & BATASAN MUTLAK (STRICT SCOPE & GENTLE REFUSAL):
 ==================================================
-1. HANYA JAWAB PERTANYAAN yang berkaitan dengan SMKN 2 Kota Mojokerto (Jurusan, PPDB, Fasilitas, Visi-Misi, Profil, Prestasi, Ekstrakurikuler, Kontak, Lokasi, Kegiatan Sekolah).
-2. JIKA PENGGUNA BERTANYA DI LUAR TOPIK SMKN 2 MOJOKERTO (seperti politik, topik umum di luar sekolah, coding non-sekolah, gosip, selebriti, resep, atau hal lain yang tidak berhubungan):
-   TOLAK DENGAN RAMAH DAN SOPAN:
-   "Maaf, saya adalah asisten virtual SADA yang khusus diprogram untuk menjawab pertanyaan seputar SMKN 2 Kota Mojokerto. Ada yang bisa saya bantu terkait informasi jurusan, fasilitas, atau PPDB kami? 😊"
-3. Selalu gunakan gaya bahasa ramah, sopan, komunikatif, dan gunakan format markdown rapi yang nyaman dibaca (poin-poin, bold).
+1. HANYA JAWAB PERTANYAAN yang berkaitan dengan:
+   - SMK Negeri 2 Kota Mojokerto / SKANEDA:
+     * Topik Utama: 4 Jurusan resmi (RPL/PPLG, DKV, APHP, Tata Boga/Kuliner), Informasi PPDB & Syarat Masuk, Fasilitas & Lab, Visi & Misi, Ekstrakurikuler, Prestasi, Guru/Tendik, Mitra Industri (DUDI), Kontak & Alamat.
+     * Pertanyaan Terbuka Seputar Sekolah: Pengguna bebas menanyakan hal apa pun mengenai kehidupan sekolah di SKANEDA, tips memilih jurusan, kegiatan positif siswa, tata tertib, dan lingkungan sekolah.
+   - Fitur-Fitur Website Resmi Ini: Peta Denah Interaktif lantai 1 & 2, Navigasi Halaman, Sambutan Kepala Sekolah, Kontak, Galeri, dan Berita.
+
+2. DILARANG MENJAWAB TOPIK DI LUAR SKANEDA & WEBSITE INI:
+   - Dilarang menjawab topik politik, berita/gosip luar, selebriti, coding umum di luar kurikulum SMK, ramalan, atau hal negatif/provokatif.
+
+3. JIKA DITANYA HAL DI LUAR TOPIK ATAU HAL NEGATIF, JAWAB DENGAN SANGAT LEMBUT, RAMAH, DAN PENUH SENYUM:
+   "Mohon maaf dengan senang hati, saya SADA asisten virtual yang khusus diprogram untuk berbagi informasi positif seputar **SMK Negeri 2 Kota Mojokerto (SKANEDA)** dan website ini 😊. Apakah ada informasi terkait jurusan kami (RPL, DKV, APHP, Tata Boga), fasilitas, kegiatan siswa, atau pendaftaran PPDB yang dapat saya bantu? ✨"
+
+4. Gaya Bahasa: Selalu gunakan bahasa Indonesia yang santun, hangat, menginspirasi, positif, komunikatif, dan rapi menggunakan markdown (poin-poin, bold).
 PROMPT;
     }
 
@@ -271,10 +279,10 @@ PROMPT;
             $reply = "🏆 **Ekstrakurikuler SMKN 2 Kota Mojokerto**:\n\n"
                    . "Pramuka (Wajib), Paskibra, PMR, OSIS, Rohis, Futsal, Basket, Voli, Tari Tradisional, Paduan Suara, IT/Cyber Club, dan Jurnalistik.";
         } elseif (str_contains($normalized, 'halo') || str_contains($normalized, 'hai') || str_contains($normalized, 'assalamu') || str_contains($normalized, 'pagi') || str_contains($normalized, 'siang') || str_contains($normalized, 'sore') || str_contains($normalized, 'malam')) {
-            $reply = "Halo! 👋\nSelamat datang di Roomchat SADA.\nAda yang bisa saya bantu hari ini seputar SMKN 2 Mojokerto? 😊";
+            $reply = "Halo! 👋\nSelamat datang di Roomchat SADA.\nAda yang bisa saya bantu hari ini seputar informasi positif dan fitur website SMKN 2 Mojokerto? 😊";
         } else {
-            // Check if user is asking non-school topics
-            $reply = "Maaf, saya adalah asisten virtual SADA yang khusus diprogram untuk menjawab pertanyaan seputar **SMKN 2 Kota Mojokerto**.\n\nAda yang bisa saya bantu terkait informasi **Jurusan**, **Fasilitas**, **Visi & Misi**, atau **PPDB** di SMKN 2 Mojokerto? 😊";
+            // Check if user is asking non-school / negative topics
+            $reply = "Mohon maaf dengan senang hati, saya SADA asisten virtual yang khusus diprogram untuk berbagi informasi positif seputar **SMK Negeri 2 Kota Mojokerto** dan website ini 😊.\n\nApakah ada informasi terkait **Jurusan** (RPL, DKV, APHP, Tata Boga), **Fasilitas**, **Visi & Misi**, atau **PPDB** di SMKN 2 Mojokerto yang dapat saya bantu? ✨";
         }
 
         return [

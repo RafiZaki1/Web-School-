@@ -25,7 +25,6 @@ class ChatbotController extends Controller
     {
         // 1. Layer 1 Anti-Bot: Honeypot Trap Check
         if (!empty($request->input('sada_security_code'))) {
-            // Silently reject automated bot bots
             return ApiResponse::error(
                 'Permintaan tidak valid terdeteksi.',
                 null,
@@ -33,23 +32,41 @@ class ChatbotController extends Controller
             );
         }
 
-        // 2. Layer 2 Anti-Spam: Rate Limiter per IP (Max 12 requests per minute)
         $ip = $request->ip() ?? 'unknown';
-        $rateLimitKey = 'chatbot_ip:' . $ip;
-        $maxAttempts = 12;
-        $decaySeconds = 60;
 
-        if (RateLimiter::tooManyAttempts($rateLimitKey, $maxAttempts)) {
-            $seconds = RateLimiter::availableIn($rateLimitKey);
+        // 2. Layer 2 Anti-Spam: Interval Cooldown Check (Min 3 detik antar pesan per IP)
+        $lastRequestKey = 'chatbot_last_req:' . $ip;
+        if (Cache::has($lastRequestKey)) {
             return ApiResponse::error(
-                "Aktivitas terlalu cepat. Harap tunggu {$seconds} detik sebelum mengirim pesan lagi.",
+                'Mohon tunggu sejenak sebelum mengirim pesan berikutnya.',
+                ['retry_after' => 3],
+                Response::HTTP_TOO_MANY_REQUESTS
+            );
+        }
+
+        // 3. Layer 3 Anti-Spam: Rolling Rate Limiter per IP (Max 5 requests per 30 detik & Max 35 per jam)
+        $shortLimitKey = 'chatbot_short:' . $ip;
+        if (RateLimiter::tooManyAttempts($shortLimitKey, 5)) {
+            $seconds = RateLimiter::availableIn($shortLimitKey);
+            return ApiResponse::error(
+                "Aktivitas terlalu cepat. Harap tunggu {$seconds} detik.",
+                ['retry_after' => $seconds],
+                Response::HTTP_TOO_MANY_REQUESTS
+            );
+        }
+
+        $hourlyLimitKey = 'chatbot_hourly:' . $ip;
+        if (RateLimiter::tooManyAttempts($hourlyLimitKey, 40)) {
+            $seconds = RateLimiter::availableIn($hourlyLimitKey);
+            return ApiResponse::error(
+                "Batas interaksi wajar tercapai. Harap tunggu beberapa saat lagi.",
                 ['retry_after' => $seconds],
                 Response::HTTP_TOO_MANY_REQUESTS
             );
         }
 
         $validated = $request->validate([
-            'message' => 'required|string|min:2|max:500',
+            'message' => 'required|string|min:2|max:400',
             'history' => 'nullable|array',
             'history.*.role' => 'nullable|string|in:user,bot,model,assistant',
             'history.*.content' => 'nullable|string|max:2000',
@@ -57,7 +74,7 @@ class ChatbotController extends Controller
 
         $message = trim($validated['message']);
 
-        // 3. Layer 3 Anti-Spam: Duplicate Message Check within 30 seconds per IP
+        // 4. Layer 4 Anti-Spam: Duplicate Message Check (45 detik per IP)
         $hashKey = 'chatbot_msg_hash:' . md5($ip . '_' . strtolower($message));
         if (Cache::has($hashKey)) {
             return ApiResponse::error(
@@ -67,8 +84,8 @@ class ChatbotController extends Controller
             );
         }
 
-        // 4. Layer 4 Anti-Spam: Gibberish & Character Flooding Check (e.g. aaaaaa, 111111)
-        if (preg_match('/(.)\1{9,}/u', $message)) {
+        // 5. Layer 5 Anti-Spam: Gibberish & Character Flooding Check (e.g. aaaaaaa, 1111111)
+        if (preg_match('/(.)\1{7,}/u', $message)) {
             return ApiResponse::error(
                 'Pesan mengandung karakter berulang yang tidak wajar. Mohon tuliskan pertanyaan yang jelas.',
                 null,
@@ -76,9 +93,26 @@ class ChatbotController extends Controller
             );
         }
 
-        // Hit Rate Limiter & Cache last message hash for 30s
-        RateLimiter::hit($rateLimitKey, $decaySeconds);
-        Cache::put($hashKey, true, 30);
+        // 6. Layer 6: Filter Kata Kasar / Negatif / Provokatif
+        $toxicPatterns = [
+            'anjing', 'babi', 'bangsat', 'kontol', 'memek', 'jembut', 'tolol', 'goblok',
+            'bajingan', 'pantek', 'kampret', 'asu', 'bgst', 'idiot', 'lonte', 'ngentot'
+        ];
+        foreach ($toxicPatterns as $word) {
+            if (stripos($message, $word) !== false) {
+                return ApiResponse::success([
+                    'status' => 'gentle_guard',
+                    'reply' => "Mohon maaf dengan penuh hormat, SADA siap membantu menjawab informasi positif seputar **SMK Negeri 2 Kota Mojokerto** dengan tutur kata yang santun dan bersahabat 😊.\n\nAda yang bisa kami bantu terkait informasi jurusan, fasilitas, atau pendaftaran PPDB?",
+                    'provider' => 'guard'
+                ], 'Guard response returned');
+            }
+        }
+
+        // Set Cooldown (3 detik), Hit Rate Limiter & Simpan Hash
+        Cache::put($lastRequestKey, true, 3);
+        RateLimiter::hit($shortLimitKey, 30);
+        RateLimiter::hit($hourlyLimitKey, 3600);
+        Cache::put($hashKey, true, 45);
 
         try {
             $history = $validated['history'] ?? [];
